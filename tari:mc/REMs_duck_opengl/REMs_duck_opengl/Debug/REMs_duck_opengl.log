@@ -1,0 +1,5 @@
+﻿  REMs_duck_opengl.cpp
+c:\users\s1250039\source\repos\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(19): warning C4244: '+=': 'double' から 'int' への変換です。データが失われる可能性があります。
+  Source.cpp
+c:\users\s1250039\source\repos\rems_duck_opengl\rems_duck_opengl\source.cpp(9): fatal error C1010: プリコンパイル ヘッダーを検索中に不明な EOF が見つかりました。'#include "pch.h"' をソースに追加しましたか?
+  コードを生成中...

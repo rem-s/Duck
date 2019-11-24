@@ -1,0 +1,84 @@
+Renesas Optimizing Linker (W3.01.00 )             28-Mar-2019 15:43:59
+
+*** Options ***
+
+-subcommand=DefaultBuild\LCDblink.clnk
+-library=DefaultBuild\LCDblink.lib
+-input=DefaultBuild\dbsct.obj
+-input=DefaultBuild\intprg.obj
+-input=DefaultBuild\LCDblink.obj
+-input=DefaultBuild\resetprg.obj
+-input=DefaultBuild\sbrk.obj
+-input=DefaultBuild\vecttbl.obj
+-noprelink
+-output=DefaultBuild\LCDblink.abs
+-list=DefaultBuild\LCDblink.map
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SU,SI/04,PResetPRG/0FFFC0000,C_1,C_2,C,C$DSEC,C$BSEC,C$INIT,C$VTBL,C$VECT,D_1,D_2,D,P,PIntPRG,W_1,W_2,W,L/0FFFC0100,FIXEDVECT/0FFFFFFD0
+-rom=D=R,D_1=R_1,D_2=R_2
+-nologo
+-end
+
+*** Error information ***
+
+*** Mapping List ***
+
+SECTION                            START      END         SIZE   ALIGN
+B_1
+                                  00000004  00000004         0   1
+R_1
+                                  00000004  00000004         0   1
+B_2
+                                  00000004  00000004         0   1
+R_2
+                                  00000004  00000004         0   1
+B
+                                  00000004  00000403       400   4
+R
+                                  00000404  00000407         4   4
+SU
+                                  00000408  00000507       100   4
+SI
+                                  00000508  00000807       300   4
+PResetPRG
+                                  fffc0000  fffc0028        29   1
+C_1
+                                  fffc0100  fffc0100         0   1
+C_2
+                                  fffc0100  fffc0100         0   1
+C
+                                  fffc0100  fffc0133        34   4
+C$DSEC
+                                  fffc0134  fffc0157        24   4
+C$BSEC
+                                  fffc0158  fffc016f        18   4
+C$INIT
+                                  fffc0170  fffc0170         0   1
+C$VTBL
+                                  fffc0170  fffc0170         0   1
+C$VECT
+                                  fffc0170  fffc056f       400   4
+D_1
+                                  fffc0570  fffc0570         0   1
+D_2
+                                  fffc0570  fffc0570         0   1
+D
+                                  fffc0570  fffc0573         4   4
+P
+                                  fffc0574  fffc0602        8f   1
+PIntPRG
+                                  fffc0603  fffc06ef        ed   1
+W_1
+                                  fffc06f0  fffc06f0         0   1
+W_2
+                                  fffc06f0  fffc06f0         0   1
+W
+                                  fffc06f0  fffc06f0         0   1
+L
+                                  fffc06f0  fffc06f0         0   1
+$ADDR_C_FFFFFF80
+                                  ffffff80  ffffff83         4   1
+$ADDR_C_FFFFFFA0
+                                  ffffffa0  ffffffaf        10   1
+FIXEDVECT
+                                  ffffffd0  ffffffff        30   4

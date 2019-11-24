@@ -1,0 +1,22 @@
+﻿  REMs_duck_opengl.cpp
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(48): error C2374: 'COLOUR_WHITE_COMMON': 再定義されています。2 回以上初期化されています。
+  c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(46): note: 'COLOUR_WHITE_COMMON' の宣言を確認してください
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(69): warning C4305: '初期化中': 'double' から 'float' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(70): warning C4305: '初期化中': 'double' から 'float' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(71): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(72): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(105): warning C4244: '+=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(107): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(108): warning C4305: '引数': 'double' から 'GLfloat' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(109): warning C4305: '引数': 'double' から 'GLfloat' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(111): warning C4244: '-=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(114): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(115): warning C4305: '引数': 'double' から 'GLfloat' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(116): warning C4305: '引数': 'double' から 'GLfloat' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(124): warning C4244: '初期化中': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(125): warning C4244: '初期化中': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(133): warning C4244: '引数': 'double' から 'GLfloat' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(135): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(136): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(158): warning C4305: '引数': 'double' から 'float' へ切り詰めます。
+c:\users\makat\onedrive\ドキュメント\rems\duck\rems_duck_opengl\rems_duck_opengl\rems_duck_opengl.cpp(168): warning C4305: '引数': 'double' から 'GLfloat' へ切り詰めます。
