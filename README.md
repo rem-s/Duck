@@ -2,7 +2,7 @@
 Projekt Duck<br>
 ### Duck the Karugamo projekt
 
-## git command
+## git command ch sh
 ### クローンする&ブランチに入る
 `git clone [URL_REPO_REMOTE]`
 
