@@ -11,11 +11,19 @@ class TA7291P:
 		self.in1 = in1
 		self.in2 = in2
 		self.pwm = pwm
+		self.init_gpio()
 		
 		#setting state
 		self.state = 2
 		self.pwm.start(0)
 		
+	def init_gpio(self):
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(self.in1, GPIO.OUT)
+		GPIO.setup(self.in2, GPIO.OUT)
+		GPIO.setup(self.pwm, GPIO.OUT)
+		self.pwm = GPIO.PWM(self.pwm, 100)
+
 	def stop(self):
 	
 		#setting stop motor
