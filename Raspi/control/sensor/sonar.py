@@ -1,14 +1,14 @@
-# import RPi.GPIO as GPIO
-# import time
-# import csv
-# import numpy as np
+import RPi.GPIO as GPIO
+import time
+import csv
+import numpy as np
 
-# trigger_pin = 17
-# echo_pin = 23
+trigger_pin = 17
+echo_pin = 23
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(trigger_pin, GPIO.OUT)
-# GPIO.setup(echo_pin, GPIO.IN)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(trigger_pin, GPIO.OUT)
+GPIO.setup(echo_pin, GPIO.IN)
 
 class sonar:
     def __init__(self):
@@ -39,15 +39,15 @@ class sonar:
 if __name__ == "__main__":
     tmp = sonar()
 
-    f = open('distance.csv', 'w')
+    #f = open('distance.csv', 'w')
 
     #while True:
     for _ in range(20):
         #print("cm=%f\tinches=%f" % tmp.get_distance())
         distance_cm = tmp.get_distance()
         print("cm=", distance_cm)
-        writer = csv.writer(f, lineterminator='\n')
-        writer.writerow([distance_cm])
+        #writer = csv.writer(f, lineterminator='\n')
+        #writer.writerow([distance_cm])
         time.sleep(1)
 
-    f.close()
+    #f.close()
