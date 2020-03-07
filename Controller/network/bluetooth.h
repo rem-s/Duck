@@ -1,6 +1,8 @@
 // bluetooth.h
 // author: tari
 
+#include "BluetoothSerial.h"
+
 BluetoothSerial SerialBT;
 
 void init_bt(){
