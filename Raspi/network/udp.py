@@ -28,4 +28,7 @@ class UDP:
 	
 		#sending data
 		self.socket.sendto(data, (self.slave_ip, self.sport))
-		
+	
+	#print debug
+	def print_debug(self):
+		return b"Hello UDP"

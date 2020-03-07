@@ -52,3 +52,7 @@ class TA7291P:
 		GPIO.output(self.in1, 0)
 		GPIO.output(self.in2, 1)
 		
+	#print debug
+	def print_debug(self):
+		return b"Hello motor"
+		
