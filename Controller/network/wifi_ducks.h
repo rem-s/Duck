@@ -2,8 +2,8 @@
 // author: tari
 
 //--- Constant, define by user
-const char ssid[] = "************"; // SSID APs.
-const char pass[] = "************";  // Password APs.
+const char ssid[] = "PERL122D-REMs"; // SSID APs.
+const char pass[] = "duckduck";  // Password APs.
 //---
 
 #include <WiFi.h>
