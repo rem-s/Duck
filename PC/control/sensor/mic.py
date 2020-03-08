@@ -23,18 +23,18 @@ class Recorder:
         # get device information
         self.__audio = pyaudio.PyAudio()
         # instance of stream obj for making wav file
-        self.__stream = pyaudio.Stream()
+        self.__stream = None
     
     def __exit__(self):
         self.__close()
         
-    def set_config(self, time_sec=3, file="record.wav", device_index=1, sampling_rate=44100, chunk=2**10, format=pyaudio.paInt16, nchannels=1):
+    def set_config(self, time_sec=3, outfile="record.wav", device_index=1, sampling_rate=44100, chunk=2**10, format=pyaudio.paInt16, nchannels=1):
         # configure foundimental information
 
         # recording time (unit: s)
         self.__record_time = time_sec
         # file name
-        self.__output_wavfile = file
+        self.__output_wavfile = outfile
         # index number of microphone
         self.__idevice = device_index
         # sampling rate,which is usually 16kHz
@@ -49,8 +49,11 @@ class Recorder:
     def show_deviceinfo(self):
         for i in range(self.audio.get_device_count()):
             print(self.audio.get_device_info_by_index(i))
-
-    def record_voice(self, wfile_list=["record.wav"]):
+    
+    def get_audio_file(self) -> str:
+        return self.__output_wavfile
+    
+    def record_voice(self, wfile_list=["record.wav"]) -> str:
         for w in wfile_list:
             #audio.open() method returns new Stream instance taking some arguments for configuration
             self.__stream = self.__audio.open(
@@ -70,7 +73,7 @@ class Recorder:
             return self.__prepare_file(frames, w)
 
 #private methods          
-    def __prepare_file(self, frames, wfile, mode='wb'):
+    def __prepare_file(self, frames, wfile, mode='wb') -> str:
         if wfile != self.__output_wavfile:
             self.__output_wavfile = wfile
         wavefile = wave.open(wfile, mode)
@@ -79,10 +82,10 @@ class Recorder:
         wavefile.setframerate(self.__sampling_rate)
         wavefile.writeframes(b"".join(frames))
         return self.__output_wavfile
-       
+
     def __close(self):
         self.__stream.close()
         self.__audio.terminate()
         self.__output_wavfile.close()
 
-#end of class Record
+#end of class Recorder
