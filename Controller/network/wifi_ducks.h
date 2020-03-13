@@ -8,7 +8,7 @@ const char pass[] = "duckduck";  // Password APs.
 
 #include <WiFi.h>
 
-void init_wifi(int port) {
+void init_wifi(void) {
 	WiFi.begin(ssid, pass);
   	while( WiFi.status() != WL_CONNECTED) {
 		delay(500);
