@@ -28,8 +28,8 @@ class TA7291P:
 	
 		#setting stop motor
 		GPIO.output(self.in1, 0)
-		GPIO.output(sefl.in2, 0)
-		pwm.ChangeDutyCycle(0)
+		GPIO.output(self.in2, 0)
+		self.pwm.ChangeDutyCycle(0)
 	
 		#setting stop mode state
 		self.state = 2
@@ -46,7 +46,7 @@ class TA7291P:
 		
 		#setting car speed
 		pwm_power = abs(param) * 100
-		pwm.ChangeDutyCycle(pwm_power)
+		self.pwm.ChangeDutyCycle(pwm_power)
 		
 	def set_straight(self):
 	
@@ -55,7 +55,7 @@ class TA7291P:
 		GPIO.output(self.in2, 0)
 	
 	def set_back(self):
-	
+
 		#setting back
 		GPIO.output(self.in1, 0)
 		GPIO.output(self.in2, 1)

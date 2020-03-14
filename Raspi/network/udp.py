@@ -27,7 +27,7 @@ class UDP:
 	def send(self, data):
 	
 		#sending data
-		self.socket.sendto(data, (self.slave_ip, self.sport))
+		self.socket.sendto(data, (self.master_ip, self.sport))
 	
 	#print debug
 	def print_debug(self):
