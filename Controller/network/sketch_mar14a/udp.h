@@ -21,8 +21,12 @@ void init_udp(int port, int addr) {
 }
 
 void send_udp(char content_send) {
+  Serial.println("I will send something to client, content is");
+  Serial.println("----------");
+  Serial.println(content_send);
+  Serial.println("----------");
   wifiUdp.beginPacket(addr_ip_remote, port_udp_remote);
   wifiUdp.write(content_send);
   wifiUdp.endPacket();
-  Serial.println("Service UDP started.");
+  Serial.println("Sent.");
 }
