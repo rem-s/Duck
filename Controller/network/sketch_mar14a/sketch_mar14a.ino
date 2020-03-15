@@ -7,7 +7,7 @@ void setup() {
   Serial.begin(9600);
   init_wifi();
   //init_bt();
-  init_udp(8888);
+  init_udp(8888, "192.168.0.56");
 }
 
 void loop() {
