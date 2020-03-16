@@ -1,6 +1,14 @@
 // udp.h
 // author: tari
 
+/* usage:
+ * init_udp(int port, char* addr)
+ *   port: port number, remote hosts.
+ *   addr: IP address, remote hosts.
+ * send_udp(content_send)
+ *   content_send: a character you want to send to the remote host.
+ */
+
 #include <WiFi.h>
 
 static int port_udp_remote = 0; // UDP port, remotes.
