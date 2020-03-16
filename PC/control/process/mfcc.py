@@ -1,3 +1,4 @@
+import wave
 import numpy as np
 import scipy.signal
 from scipy.fftpack import realtransforms
@@ -6,34 +7,34 @@ from scipy.fftpack import realtransforms
 class MFCC:
     
 #public method
-    def __init__(self):
-        pass
-
-    def get_mfcc(self, wavfile="record.wav", p=0.97, nchannels=24, nceps=12):
-        spf = wave.open(str(wavfile), "rb")
-        fs = spf.getframerate()
+    def __init__(self, wavfile="record.wav"):
+        self.__waveform = wave.open(str(wavfile), mode="rb")
+        self.__freq = self.__waveform.getframerate()
+    
+    def get_sampliing_freq(self):
+        return self.__freq
+    
+    def get_mfcc(self, p=0.97, nchannels=24, nceps=12):
         #extract raw data from wavfile
-        signal = []
-        signal = spf.readframes(-1) #read all data
-        signal = np.frombuffer(signal, dtype="int16") / float(2**15) #normalize
+        __signal = []
+        __signal = self.__waveform.readframes(-1) #read all data
+        __signal = np.frombuffer(__signal, dtype="int16") / float(2**15) #normalize
 
         #multiply preEmphasis filter
-        #p = 0.97
-        signal = __preEmphasis(signal, p)
-
+        __signal = self.__preEmphasis(__signal, p)
         #hamming window
-        hammingWindow = np.hamming(len(signal))
-        signal = signal * hammingWindow
+        dataSz = len(__signal)
+        hammingWindow = np.hamming(dataSz)
+        __signal = __signal * hammingWindow
 
         #get spectrum
-        dataSz = len(signal)
-        nfft = 2**int(np.log2(dataSz)+1)
-        spec = np.abs(np.fft.fft(signal, nfft)/(nfft/2))[:nfft//2]
+        self.__nfft = 2**int(np.log2(dataSz)+1)
+        spec = np.abs(np.fft.fft(__signal, self.__nfft)/(self.__nfft/2))[:self.__nfft//2]
 
         #melfilterbank
         #numChannels = 24
-        df = fs / nfft
-        filterbank, fcenters = __melFilterBank(fs, nfft, nchannels)
+        df = self.__freq / self.__nfft
+        filterbank, fcenters = self.__melFilterBank(self.__freq, self.__nfft, nchannels)
 
         #apply melfilterbank to each spectrum, then take sum all
         mspec = []
@@ -42,8 +43,8 @@ class MFCC:
         mspec = np.array(mspec)
         
         #get mfcc by discrete cosine form
-        mfcc = __dct(mspec, nceps)
-        print(type(mfcc))
+        mfcc = self.__dct(mspec, nceps)
+        #print(type(mfcc))
         return mfcc
 
 #private methods
@@ -65,12 +66,12 @@ class MFCC:
     def __melFilterBank(self, fs, nfft, nchannels):
         #ナイキスト周波数
         fmax = fs / 2
-        melmax = __hz2mel(fmax)
+        melmax = self.__hz2mel(fmax)
         nmax = nfft // 2
         df = fs / nfft
         dmel = melmax / (nchannels + 1)
         melcenters = np.arange(1, nchannels + 1) * dmel
-        fcenter = __mel2hz(melcenters)
+        fcenter = self.__mel2hz(melcenters)
         indexcenter = np.round(fcenter / df)
         indexstart = np.hstack((0, indexcenter[0:nchannels - 1]))
         # 各フィルタの終了位置のインデックス
