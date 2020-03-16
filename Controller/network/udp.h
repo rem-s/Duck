@@ -1,17 +1,36 @@
 // udp.h
 // author: tari
 
-//--- Constant, define by user
-static const char* addr_ip_remote = "***.***.***.**"; //IP address, remotes.
-static const int port_udp_remote = 0000; // UDP port, remotes.
-//---
+/* usage:
+ * init_udp(int port, char* addr)
+ *   port: port number, remote hosts.
+ *   addr: IP address, remote hosts.
+ * send_udp(content_send)
+ *   content_send: a character you want to send to the remote host.
+ */
 
-void init_udp(int port){
-	wifiUdp.begin(port);
+#include <WiFi.h>
+
+static int port_udp_remote = 0; // UDP port, remotes.
+static char* addr_ip_remote = "0.0.0.0"; //IP address, remotes.
+
+static WiFiUDP wifiUdp;
+
+void init_udp(int port, char* addr) {
+  Serial.println("I will initialize service UDP.");
+  port_udp_remote = port;
+  addr_ip_remote = addr;
+  wifiUdp.begin(port_udp_remote);
+  Serial.println("Service UDP started.");
 }
 
-void send_udp(char content_send){
-	wifiUdp.beginPacket(addr_ip_remote, port_udp_remote);
-	wifiUdp.write(content_send);
-	wifiUdp.endPacket();
+void send_udp(char content_send) {
+  Serial.println("I will send a character to the client, it is");
+  Serial.println("----------");
+  Serial.println(content_send);
+  Serial.println("----------");
+  wifiUdp.beginPacket(addr_ip_remote, port_udp_remote);
+  wifiUdp.write(content_send);
+  wifiUdp.endPacket();
+  Serial.println("I sent that.");
 }
