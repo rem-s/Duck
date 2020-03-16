@@ -1,27 +1,24 @@
+from network.udp import *
 from PC.control.ai.audio_model import *
 from PC.control.process.mfcc import *
 from PC.control.sensor.mic import Recorder
-#from sklearn.externals import joblib
 
-#make an instance of Recoder
+#インスタンス生成(レコード, モデル[決定木], UDP)
 record = Recorder()
-#make list of wav file and record them, with options such as dst, overwrite 
-outfile = record.record_voice(["a.wav"], overwrite=True)
-
-#debug print for list of output files
-print(outfile, record.get_audio_file_list())
-#get device info as dict. you have to look up this beforehand and make sure you choose correct device
-print(record.show_deviceinfo())
-
-#make an instance of MFCC taking argument of wav file
-mfcc = MFCC("./control/audioSample/a.wav")
-#get feature vector which has 12 dimensions as list
-features = mfcc.get_mfcc().reshape(1, -1)
-
-#make an instance of Model
 model = Model()
-#you can choose some algorithms you will use
-model.model_select("DecisionTree")
-#predict result with model we provide
-result = model.predict(features)
-print(result)
+model.model_select("DecisionTree") #model_selectメソッドなくしたい (コンストラクタで指定するほうがわかりやすい)
+udp = UDP("192.168.0.56","192.168.0.51", 8889, 8888)
+
+while True:
+
+	#レコードとMFCC
+	outfile = record.record_voice(["a.wav"], overwrite=True)
+	mfcc = MFCC("./control/audioSample/a.wav")
+	features = mfcc.get_mfcc().reshape(1, -1)
+	
+	#音声認識
+	result = model.predict(features)
+	
+	#認識結果をraspberry piに送信し制御
+	udp.send(int(result).to_bytes(1, 'big'))
+	
