@@ -1,6 +1,6 @@
-#include "bluetooth.h"
-#include "udp.h"
-#include "wifi_ducks.h"
+#include "network/bluetooth.h"
+#include "network/udp.h"
+#include "network/wifi_ducks.h"
 
 void setup() {
   // put your setup code here, to run once:
