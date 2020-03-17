@@ -1,7 +1,7 @@
 // bluetooth.h
 // author: tari
 
-#include "BluetoothSerial.h"
+#include <BluetoothSerial.h>
 
 BluetoothSerial SerialBT;
 
