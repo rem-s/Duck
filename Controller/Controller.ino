@@ -2,6 +2,7 @@
 #include "network/udp.h"
 #include "network/wifi_ducks.h"
 #include "control/sensor/button.h"
+#include "control/sensor/joy_stick.h"
 
 void setup() {
   // put your setup code here, to run once:
