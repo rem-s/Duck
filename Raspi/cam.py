@@ -16,6 +16,6 @@ while True:
 	k = cv2.waitKey(1)
 	if k== 13: 
 		break
-	a = tcp.receive()
+	a = tcp.receive(1024)
 
 cam.releace()
