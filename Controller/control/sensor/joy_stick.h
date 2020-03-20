@@ -22,7 +22,7 @@ int get_value_stick_x(){
     int value_x;
     value_x = analogRead(NUM_PORT_AXIS_X_STICK);
     if(value_x < 2048) {
-        value_x = (2048 - value_x) * (-1)
+        value_x = (2048 - value_x) * (-1);
     }
     else {
         value_x = value_x - 2048;
@@ -36,7 +36,7 @@ int get_value_stick_y(){
     int value_y;
     value_y = analogRead(NUM_PORT_AXIS_Y_STICK);
     if(value_y < 2048) {
-        value_y = (2048 - value_y) * (-1)
+        value_y = (2048 - value_y) * (-1);
     }
     else {
         value_y = value_y - 2048;
