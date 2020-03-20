@@ -7,6 +7,7 @@ import csv
 
 class acc:
     def __init__(self):
+        # need to change
         pass
         #i2c = busio.I2C(board.SCL, board.SDA)
         #accelerometer = adafruit_adxl34x.ADXL345(i2c)
