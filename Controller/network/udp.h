@@ -24,7 +24,7 @@ void init_udp(int port, char* addr) {
   Serial.println("Service UDP started.");
 }
 
-void send_udp(String content_send) {
+void send_udp(int content_send) {
   Serial.println("I will send a character to the client, it is");
   Serial.println("----------");
   Serial.println(content_send);
