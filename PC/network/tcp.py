@@ -15,7 +15,6 @@ class TCP:
 		#set and connect server socket
 		if self.server_flag:
 			self.soc = socket(AF_INET, SOCK_STREAM)
-			self.soc.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 			self.soc.bind((self.server_ip, self.port))
 			self.soc.listen(10) # wait for 10 sec
 			
@@ -28,9 +27,9 @@ class TCP:
 			self.soc.connect((self.server_ip, self.port))
 		
 	#TCP receive
-	def receive(self):
-		if self.server_flag: return self.client_soc.recv(4096)
-		else: return self.soc.recv(4096)
+	def receive(self, size):
+		if self.server_flag: return self.client_soc.recv(size)
+		else: return self.soc.recv(size)
 
 	#TCP send
 	def send(self, data):
