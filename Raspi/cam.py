@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import time
 
-tcp = TCP("192.168.0.57", 8889)
+tcp = TCP("192.168.0.58", 8889)
 cam = cv2.VideoCapture(0)
 
 while True:
