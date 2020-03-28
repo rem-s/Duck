@@ -5,7 +5,7 @@ import cv2
 import time
 
 
-tcp = TCP("192.168.0.88", 8889)
+tcp = TCP("192.168.0.92", 8889)
 cam = cv2.VideoCapture(0)
 
 #モーター初期化
@@ -27,32 +27,32 @@ while True:
 	print(msg)
 	
 	#前進
-	if msg == :
+	if msg == 1:
 		r_motor.set_motor_pwm(0.2)
 		l_motor.set_motor_pwm(0.2)
 		
 	#右前
-	if msg == :
+	if msg == 2:
 		r_motor.set_motor_pwm(0.1)
 		l_motor.set_motor_pwm(0.2)
 		
 	#左前
-	if msg == :
+	if msg == 3:
 		r_motor.set_motor_pwm(0.2)
 		l_motor.set_motor_pwm(0.1)
 		
 	#後進
-	if msg == :
+	if msg == 4:
 		r_motor.set_motor_pwm(-0.2)
 		l_motor.set_motor_pwm(-0.2)
 		
 	#右後
-	if msg == :
+	if msg == 5:
 		r_motor.set_motor_pwm(-0.1)
 		l_motor.set_motor_pwm(-0.2)
 		
 	#左後
-	if msg == :
+	if msg == 6:
 		r_motor.set_motor_pwm(-0.2)
 		l_motor.set_motor_pwm(-0.1)
 		
