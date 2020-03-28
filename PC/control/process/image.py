@@ -44,6 +44,18 @@ def Med(img):
 	
 	return binarize_img
 	
+#平均値による二値化
+def Mean(img):
+	
+	#初期化
+	img_flat = img.reshape(-1)
+	Imedian = np.mean(img_flat)
+	
+	#二値化画像生成
+	binarize_img = np.where(img_flat <= Imedian, 0, 1).reshape(img.shape)
+	
+	return binarize_img
+	
 #近傍ピクセルの探索
 def neighbor(img, x, y, lookup_table):
 	height, width = img.shape
