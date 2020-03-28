@@ -1,3 +1,6 @@
+// lcd.ino
+// It is not compatible with ESP32 Dev Module.
+
 // IMPORTANT: Adafruit_TFTLCD LIBRARY MUST BE SPECIFICALLY
 // CONFIGURED FOR EITHER THE TFT SHIELD OR THE BREAKOUT BOARD.
 // SEE RELEVANT COMMENTS IN Adafruit_TFTLCD.h FOR SETUP.
@@ -8,9 +11,9 @@
 // The control pins for the LCD can be assigned to any digital or
 // analog pins...but we'll use the analog pins as this allows us to
 // double up the pins with the touch screen (see the TFT paint example).
-#define LCD_CS A3 // Chip Select goes to Analog 3
-#define LCD_RS A2 // Command/Data goes to Analog 2
-#define LCD_WR A1 // LCD Write goes to Analog 1
+#define LCD_CS A7 // Chip Select goes to Analog 3
+#define LCD_RS A6 // Command/Data goes to Analog 2
+#define LCD_WR A3 // LCD Write goes to Analog 1
 #define LCD_RD A0 // LCD Read goes to Analog 0
 
 #define LCD_RESET A4 // Can alternately just connect to Arduino's reset pin
@@ -32,6 +35,7 @@
 #define  BLACK   0x0000
 #define BLUE    0x001F
 #define RED     0xF800
+#define RED2    0xF000
 #define GREEN   0x07E0
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
@@ -110,7 +114,7 @@ void loop(void) {
 }
 
 unsigned long testText() {
-  tft.fillScreen(BLACK);
+  tft.fillScreen(RED2);
   unsigned long start = micros();
   tft.setTextColor(GREEN);
   tft.setTextSize(5);
