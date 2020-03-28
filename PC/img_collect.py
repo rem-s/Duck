@@ -8,6 +8,7 @@ import time
 import pygame #use for joystick
 import sys
 
+
 ###
 SCREEN_SIZE = (300, 300)  # 画面サイズ (横/縦)
 
