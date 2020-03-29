@@ -20,7 +20,7 @@
 #include "network/wifi_ducks.h"
 #include "control/sensor/button.h"
 #include "control/sensor/joy_stick.h"
-
+#include "display/lcd.h"
 
 void setup() {
   // put your setup code here, to run once:

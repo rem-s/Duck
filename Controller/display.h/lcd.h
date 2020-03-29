@@ -14,7 +14,10 @@
 
 
 void init_lcd(){
-    
+    tft.initR(INITR_BLACKTAB);
+    tft.fillScreen(ST77XX_BLACK);
+    tft.setTextWrap(false);
+    tft.setCursor(0, 0);
 }
 
 /*
