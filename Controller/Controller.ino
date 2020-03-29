@@ -21,6 +21,7 @@
 #include "control/sensor/button.h"
 #include "control/sensor/joy_stick.h"
 
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -31,7 +32,9 @@ void setup() {
   init_button(1, 0);
   init_button(2, 0);
   init_button(3, 0);
-  init_stick(A6, A7);
+  init_stick(32, 33);
+  tft.setRotation(3);
+  tft.fillScreen(ST77XX_BLACK);
 }
 
 void loop() {
