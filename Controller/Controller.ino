@@ -20,11 +20,12 @@
 #include "network/wifi_ducks.h"
 #include "control/sensor/button.h"
 #include "control/sensor/joy_stick.h"
-#include "display/lcd.h"
+#include "lcd.h"
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  init_lcd();
   init_wifi();
   //init_bt();
   init_udp(8889, "192.168.0.58"); // (port, address)
@@ -35,7 +36,16 @@ void setup() {
   init_stick(32, 33);
   tft.setRotation(3);
   tft.fillScreen(ST77XX_BLACK);
+  disp_nw();
 }
+
+/*
+ * 
+ * FRONT
+ * 213
+ * 546
+ * 
+ */
 
 void loop() {
   // put your main code here, to run repeatedly:
