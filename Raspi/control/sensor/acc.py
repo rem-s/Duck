@@ -7,10 +7,14 @@ import csv
 
 class acc:
     def __init__(self):
-        i2c = busio.I2C(board.SCL, board.SDA)
-        accelerometer = adafruit_adxl34x.ADXL345(i2c)
+        # need to change
+        pass
+        #i2c = busio.I2C(board.SCL, board.SDA)
+        #accelerometer = adafruit_adxl34x.ADXL345(i2c)
 
     def get_acceleration(self):
+        i2c = busio.I2C(board.SCL, board.SDA)
+        accelerometer = adafruit_adxl34x.ADXL345(i2c)
         x_axis, y_axis, z_axis = accelerometer.acceleration
         return [x_axis, y_axis, z_axis]
 
