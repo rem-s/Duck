@@ -1,18 +1,18 @@
 /* controller.ino
- * shinchokuer: tari
- * 
- * This, program for controller, ESP32 based.
- * This will read input value of buttons and joyeuxsticke, then send
- * some commands to Duck Raspberry Pi via UDP connection over Wi-Fi.
- * 
- * COMMANDS:
- * 
- * FRONT: 1
- * BACK: 2
- * LEFT: 3
- * RIGHT: 4
- * STOP: 0
- */
+   shinchokuer: tari
+
+   This, program for controller, ESP32 based.
+   This will read input value of buttons and joyeuxsticke, then send
+   some commands to Duck Raspberry Pi via UDP connection over Wi-Fi.
+
+   COMMANDS:
+
+   FRONT: 1
+   BACK: 2
+   LEFT: 3
+   RIGHT: 4
+   STOP: 0
+*/
 
 
 //#include "network/bluetooth.h"
@@ -40,12 +40,12 @@ void setup() {
 }
 
 /*
- * 
- * FRONT
- * 213
- * 546
- * 
- */
+
+   FRONT
+   213
+   546
+
+*/
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -54,20 +54,37 @@ void loop() {
     //send_udp("F");
     //delay(50);
   }
-  if (get_value_stick_x() < -1024) {
-    send_udp('4');
-  }
-  else if (get_value_stick_x() > 1024) {
-    send_udp('3');
+  if (get_value_stick_y() > 1024) {
+    if (get_value_stick_x() > 1024) {
+      send_udp('3');
+      disp_direc(3);
+    }
+    else if (get_value_stick_x() < -1024) {
+      send_udp('2');
+      disp_direc(2);
+    }
+    else {
+      send_udp('1');
+      disp_direc(1);
+    }
   }
   else if (get_value_stick_y() < -1024) {
-    send_udp('1');
-  }
-  else if (get_value_stick_y() > 1024) {
-    send_udp('2');
+    if (get_value_stick_x() > 1024) {
+      send_udp('6');
+      disp_direc(6);
+    }
+    else if (get_value_stick_x() < -1024) {
+      send_udp('5');
+      disp_direc(5);
+    }
+    else {
+      send_udp('4');
+      disp_direc(4);
+    }
   }
   else {
     send_udp('0');
+    disp_direc(0);
   }
-  delay(200);
+  delay(20);
 }

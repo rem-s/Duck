@@ -14,5 +14,7 @@ void init_wifi(void) {
   	while( WiFi.status() != WL_CONNECTED) {
 		delay(500);
 	}
+    disp_string("SSID: ");
+    disp_string(ssid_wifis);
  Serial.println("Connected, Wireless.");
 }

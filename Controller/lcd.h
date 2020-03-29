@@ -35,10 +35,56 @@ void disp_nw() {
     tft.print(ssid_wifis);
 }
 
-void disp_direc(int direc) {
+void disp_direc(int direc_neu) {
+    static int direc_old = 7;
     tft.setCursor(0, 10);
-    tft.setTextSize(4);
-    switch (direc) {
+    tft.setTextSize(3);
+    tft.setTextColor(ST77XX_BLACK);
+    if(direc_neu != direc_old){
+        switch (direc_old) {
+            case 1:
+                tft.println(" |");
+                tft.println("");
+                tft.println("");
+                break;
+            case 2:
+                tft.println("\\");
+                tft.println("");
+                tft.println("");
+                break;
+            case 3:
+                tft.println("  /");
+                tft.println("");
+                tft.println("");
+                break;
+            case 4:
+                tft.println("");
+                tft.println("");
+                tft.println(" |");
+                break;
+            case 5:
+                tft.println("");
+                tft.println("");
+                tft.println("/");
+                break;
+            case 6:
+                tft.println("");
+                tft.println("");
+                tft.println("  \\");
+                break;
+            case 0:
+                tft.println("");
+                tft.println("");
+                tft.println("");
+                break;
+            default:
+                break;
+        }
+    }
+    tft.setCursor(0, 10);
+    tft.setTextSize(3);
+    tft.setTextColor(ST77XX_WHITE);
+    switch (direc_neu) {
         case 1:
             tft.println(" |");
             tft.println(" O ");
@@ -57,7 +103,7 @@ void disp_direc(int direc) {
         case 4:
             tft.println("");
             tft.println(" O ");
-            tft.println("|");
+            tft.println(" |");
             break;
         case 5:
             tft.println("");
@@ -76,4 +122,9 @@ void disp_direc(int direc) {
             tft.println("");
             break;
     }
+    direc_old = direc_neu;
+}
+
+void disp_string(char* cont){
+    tft.println(cont);
 }
