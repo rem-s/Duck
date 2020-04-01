@@ -922,16 +922,18 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="-12.7" y="40.64" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="17" class="0">
 <segment>
 <pinref part="U$5" gate="G$1" pin="P1"/>
 <wire x1="15.24" y1="-30.48" x2="12.7" y2="-30.48" width="0.1524" layer="91"/>
+<label x="12.7" y="-30.48" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="N$2" class="0">
+<net name="16" class="0">
 <segment>
 <pinref part="U$4" gate="G$1" pin="P1"/>
 <wire x1="15.24" y1="-22.86" x2="12.7" y2="-22.86" width="0.1524" layer="91"/>
+<label x="12.7" y="-22.86" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>

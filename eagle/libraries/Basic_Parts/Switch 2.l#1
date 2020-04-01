@@ -93,10 +93,16 @@
 <wire x1="1.7526" y1="-1.0414" x2="1.651" y2="-1.0414" width="0.127" layer="21"/>
 </package>
 <package name="PUSH_SW">
-<pad name="P$1" x="-3.81" y="0" drill="1" shape="long"/>
-<pad name="P$2" x="-3.81" y="-5.08" drill="1" shape="long"/>
-<pad name="P$3" x="3.81" y="0" drill="1" shape="long"/>
-<pad name="P$4" x="3.81" y="-5.08" drill="1" shape="long"/>
+<pad name="P1" x="-3.81" y="0" drill="1" shape="long"/>
+<pad name="P2" x="-3.81" y="-5.08" drill="1" shape="long"/>
+<pad name="P3" x="3.81" y="0" drill="1" shape="long"/>
+<pad name="P4" x="3.81" y="-5.08" drill="1" shape="long"/>
+<wire x1="-3.81" y1="0" x2="-3.81" y2="-5.08" width="0.127" layer="21"/>
+<wire x1="-3.81" y1="-5.08" x2="3.81" y2="-5.08" width="0.127" layer="21"/>
+<wire x1="3.81" y1="-5.08" x2="3.81" y2="0" width="0.127" layer="21"/>
+<wire x1="3.81" y1="0" x2="-3.81" y2="0" width="0.127" layer="21"/>
+<circle x="0" y="-2.54" radius="2.54" width="0.127" layer="21"/>
+<circle x="0" y="-2.54" radius="1.27" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
