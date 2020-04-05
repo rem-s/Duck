@@ -1,3 +1,4 @@
+#データ収集用プログラム
 from control.motor.ta7291 import *
 from network.tcp import *
 import numpy as np
@@ -5,7 +6,7 @@ import cv2
 import time
 
 
-tcp = TCP("192.168.0.92", 8889)
+tcp = TCP("192.168.0.105", 8889)
 cam = cv2.VideoCapture(0)
 
 #モーター初期化
@@ -18,10 +19,7 @@ while True:
 	result, encimg = cv2.imencode('.jpg', img, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 	jpegstring=encimg.tostring()
 	tcp.send(jpegstring) 
-	
-	k = cv2.waitKey(1)
-	if k== 13: 
-		break
+
 	msg = tcp.receive(1024)	
 	msg = int.from_bytes(msg, byteorder="big", signed=True)
 	print(msg)

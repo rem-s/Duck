@@ -5,9 +5,14 @@ import cv2
 import pygame
 from PIL import Image
 import time
+import os
 
-tcp = TCP("192.168.0.88", 8889, server_flag=True)
+tcp = TCP("192.168.0.105", 8889, server_flag=True)
 
+img_dir = "./img"
+if not os.path.exists(img_dir): os.mkdir(img_dir)
+
+"""
 SCREEN_SIZE = (300, 300)
 pygame.init()
 
@@ -17,8 +22,8 @@ Y_CENTER = int(SCREEN_SIZE[1]/2)
 pygame.joystick.init()
 joy = pygame.joystick.Joystick(0)
 joy.init()
-
-img_n = 0
+"""
+img_n = 1
 while True:
 
 	img_n += 1
@@ -27,14 +32,18 @@ while True:
 	narray = np.fromstring(receivedstr,dtype='uint8')  
 	data = cv2.imdecode(narray,1).reshape((64, 64, 3))
 
+	data = cv2.resize(data, (160, 120))
 	cv2.imshow("",data)
-	pil_img = Image.fromarray(cv2.cvtColor(data, cv2.COLOR_BGR2RGB))
-	pil_img.save('img/img%d.jpg'%(img_n))
 	
-	k = cv2.waitKey(0)
+	pil_img = Image.fromarray(cv2.cvtColor(data, cv2.COLOR_BGR2RGB))
+	pil_img.save('%s/img%d.jpg'%(img_dir, img_n))
+	print("pil write")
+	
+	k = cv2.waitKey(1)
 	if k== 13: 
 		break
-		
+	
+	"""
 	#2 : PSコントロラーの値を取得
 	# イベント処理
 	for event in pygame.event.get():
@@ -65,7 +74,8 @@ while True:
 		if circle_y >= 0 and circle_y < 150: data = 3
 		elif circle_y >= 150 and circle_y <= 300: data = 6
 	print(data)
-	
+	"""
+	data = 1
 	tcp.send(data.to_bytes(8, 'big'))
 	
 cv2.destroyAllWindows()
