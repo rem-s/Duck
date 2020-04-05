@@ -1,3 +1,0 @@
-import acc
-
-print('world')
