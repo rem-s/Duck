@@ -24,7 +24,7 @@ class sonar:
         """
         Return
         ----------
-        dis : distance (cm)
+        dis : distance (cm) float
         """
         # check iteration time > 60[msec]
         iter_time = self.end_time - self.start_time
