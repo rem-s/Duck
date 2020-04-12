@@ -10,7 +10,8 @@
  */
 
 #include <WiFi.h>
-#include "../lcd.h"
+
+extern void disp_string(char*);
 
 static int port_udp_remote = 0; // UDP port, remotes.
 static char* addr_ip_remote = "0.0.0.0"; //IP address, remotes.
@@ -18,14 +19,17 @@ static char* addr_ip_remote = "0.0.0.0"; //IP address, remotes.
 static WiFiUDP wifiUdp;
 
 void init_udp(int port, char* addr) {
+char str[50];
   Serial.println("I will initialize service UDP.");
   port_udp_remote = port;
   addr_ip_remote = addr;
   wifiUdp.begin(port_udp_remote);
     disp_string("Remote IP address: ");
-    disp_string(addr_ip_remote);
+    sprintf(str,"%d",addr_ip_remote);
+    disp_string(str);
     disp_string("UDP port: ");
-    disp_string(port_udp_remote);
+    sprintf(str,"%d",port_udp_remote);
+    disp_string(str);
   Serial.println("Service UDP started.");
 }
 
