@@ -42,7 +42,7 @@ class ADXL345:
 
     address = None
 
-    def __init__(self, address = 0x53):        
+    def __init__(self, address = 0x53):
         self.address = address
         self.setBandwidthRate(BW_RATE_100HZ)
         self.setRange(RANGE_2G)
@@ -97,7 +97,7 @@ class ADXL345:
         y = round(y, 4)
         z = round(z, 4)
 
-        return {"x": x, "y": y, "z": z}
+        return [x, y, z]
 
 if __name__ == "__main__":
     # if run directly we'll just create an instance of the class and output 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     while True:
         axes = adxl345.getAxes(True)
         print("ADXL345 on address 0x%x:" % (adxl345.address))
-        print("   x = %.3fG" % ( axes['x'] ))
-        print("   y = %.3fG" % ( axes['y'] ))
-        print("   z = %.3fG" % ( axes['z'] ))
+        print("   x = %.3fG" % ( axes[0] ))
+        print("   y = %.3fG" % ( axes[1] ))
+        print("   z = %.3fG" % ( axes[2] ))
         sleep(1)
