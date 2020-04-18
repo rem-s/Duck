@@ -1,26 +1,33 @@
-// wifi_ducks.h
-// author: tari
-
-//--- Constant, define by user
-char ssid_wifis[] = "PERL122D-REMs"; // SSID APs.
-char pass_wifis[8];  // Password APs.
-//---
+/* wifi_ducks.h
+ * shinchokuer: tari
+ */
 
 #include <WiFi.h>
-
+#include "passwd.h"
 extern void disp_string(char*);
+extern void disp_stringln(char*);
 
 void init_wifi(void) {
+    disp_string("Network init");
     int n=0;
+    char buf[64];
     Serial.println("Connecting wireless, Start.");
-    for(n = 0 ; n < 8 ; n++) {
-        pass_wifis[n] = Serial.read();
-    }
+    Serial.println("Enter SSID:");
     WiFi.begin(ssid_wifis, pass_wifis);
-    while( WiFi.status() != WL_CONNECTED) {
-        delay(500);
+    Serial.println("begin");
+    for(n = 0 ; n <= 4 ; n++) {
+        if(WiFi.status() != WL_CONNECTED){
+            if(n = 4) {
+                //disp_stringln("      [FAILEN]");
+                //while(1){
+                //}
+            }
+            delay(500);
+        }
+        
     }
+    disp_stringln("          [OK]");
     disp_string("SSID: ");
-    disp_string(ssid_wifis);
+    disp_stringln(ssid_wifis);
     Serial.println("Connected, Wireless.");
 }
