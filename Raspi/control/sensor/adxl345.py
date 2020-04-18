@@ -7,7 +7,7 @@
 # the Adafruit Triple Axis ADXL345 breakout board:
 # http://shop.pimoroni.com/products/adafruit-triple-axis-accelerometer
 
-import smbus
+import smbus2 as smbus
 from time import sleep
 
 # select the correct i2c bus for this revision of Raspberry Pi

@@ -1,6 +1,10 @@
 import RPi.GPIO as GPIO
 import time
 
+#from network.tcp import *
+
+#tcp = TCP("192.168.0.133", 8889)
+
 class sonar:
     def __init__(self, trigger_pin=17, echo_pin=27, start_time=0, end_time=0):
         """
@@ -56,5 +60,6 @@ if __name__ == "__main__":
 
     while True:
         distance_cm = tmp.get_distance()
-        print("cm=", distance_cm)
+        print("distance:", distance_cm, "cm")
+        #tcp.send(int(distance_cm).to_bytes(10, "big"))
         time.sleep(1)
