@@ -26,16 +26,16 @@
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
   pinMode(14, OUTPUT);
-  digitalWrite(12, HIGH);
+  digitalWrite(13, HIGH);
   digitalWrite(14, HIGH);
   init_lcd();
   init_wifi();
   //init_bt();
   init_udp(8889, "192.168.0.58"); // (port, address)
-  init_button(0, 34);
-  init_button(1, 35);
+  init_button(0, 35);
+  init_button(1, 27);
   init_button(2, 0);
   init_button(3, 0);
   init_stick(32, 33);
@@ -55,21 +55,17 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-if(digitalRead(34)){
-  digitalWrite(13,HIGH);
-}else{
-  digitalWrite(13,LOW);
-}
-if(digitalRead(35)){
-  digitalWrite(14,HIGH);
-}else{
-  digitalWrite(14,LOW);
-}
-  
+
   static String sendval;
   if (get_status_button(0) == 1) {
-    //send_udp("F");
-    //delay(50);
+    digitalWrite(13, HIGH);
+  } else {
+    digitalWrite(13, LOW);
+  }
+  if (get_status_button(1) == 1) {
+    digitalWrite(14, HIGH);
+  } else {
+    digitalWrite(14, LOW);
   }
   if (get_value_stick_y() > 1024) {
     if (get_value_stick_x() > 1024) {
