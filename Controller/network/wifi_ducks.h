@@ -19,7 +19,7 @@ void init_wifi(void) {
 		if(WiFi.status() == WL_CONNECTED) {
 			break;
 		}
-		if(WiFi.status() != WL_CONNECTED){
+		else if(WiFi.status() != WL_CONNECTED){
 			if(n = 4) {
 				Serial.println("[FAILEN] Connecting wireless");
 				return;
