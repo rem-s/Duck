@@ -1,5 +1,13 @@
-/* wifi_ducks.h
+/* 
+ * wifi_ducks.h
  * shinchokuer: tari
+ * 
+ * DESCRIPTION
+ *  This is for using WLAN feature of duck controller.
+ * 
+ * DEPENDENCIES
+ *  This header file needs WiFi.h, standard library, and additional
+ *  header file to define connection info.
  */
 
 #include <WiFi.h>
@@ -8,7 +16,7 @@ extern void disp_string(char*);
 extern void disp_stringln(char*);
 
 void init_wifi(void) {
-	disp_string("[DO] Network init");
+	disp_string("Network init      ");
 	int n=0;
 	char buf[64];
 	Serial.println("[START] Connecting wireless");
@@ -22,15 +30,13 @@ void init_wifi(void) {
 		else if(WiFi.status() != WL_CONNECTED){
 			if(n = 4) {
 				Serial.println("[FAILEN] Connecting wireless");
+				disp_stringln("[FAILEN]");
 				return;
-				//disp_stringln("      [FAILEN]");
-				//while(1){
-				//}
 			}
 			delay(500);
 		}
 	}
-	disp_stringln("          [OK]");
+	disp_stringln("[  OK  ]");
 	disp_string("SSID: ");
 	disp_stringln(ssid_wifis);
 	Serial.println("[SUCCESS] Connecting wireless");

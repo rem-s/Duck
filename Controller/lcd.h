@@ -2,6 +2,7 @@
    tft.h
    shinchokuer: tari
 
+   Width: 26 characters at font size 1
 */
 
 #include <SPI.h>
