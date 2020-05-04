@@ -12,8 +12,8 @@ void init_wifi(void) {
     int n=0;
     char buf[64];
     Serial.println("Connecting wireless, Start.");
-    Serial.println("Enter SSID:");
-    WiFi.begin(ssid_wifis, pass_wifis);
+    //Serial.println("Enter SSID:");
+    WiFi.begin(SSID_WIFIS, PASS_WIFIS);
     Serial.println("begin");
     for(n = 0 ; n <= 4 ; n++) {
         if(WiFi.status() != WL_CONNECTED){
