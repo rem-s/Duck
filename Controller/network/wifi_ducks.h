@@ -12,8 +12,17 @@
 
 #include <WiFi.h>
 #include "passwd.h"
+
+// These are declared at lcd.h.
 extern void disp_string(char*);
 extern void disp_stringln(char*);
+
+/*
+ * void init_wifi(void)
+ * 
+ * It establishes connection between controller
+ * and accesspoint.
+*/
 
 void init_wifi(void) {
 	disp_string("Network init      ");

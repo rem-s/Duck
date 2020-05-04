@@ -1,5 +1,5 @@
 /*
-   tft.h
+   lcd.h
    shinchokuer: tari
 
    Width: 26 characters at font size 1
