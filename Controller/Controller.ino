@@ -3,7 +3,7 @@
 
    This, program for controller, ESP32 based.
    This will read input value of buttons and joyeuxsticke, then send
-   some commands to Duck Raspberry Pi via UDP connection over Wi-Fi.
+   some collllands to Ducks Raspberry Pi via UDP connection over Wi-Fi.
 
    COMMANDS:
 
