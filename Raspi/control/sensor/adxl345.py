@@ -9,6 +9,9 @@
 
 import smbus2 as smbus
 from time import sleep
+import csv
+
+import pandas as pd
 
 # select the correct i2c bus for this revision of Raspberry Pi
 revision = ([l[12:-1] for l in open('/proc/cpuinfo','r').readlines() if l[:8]=="Revision"]+['0000'])[0]
@@ -93,9 +96,9 @@ class ADXL345:
             y = y * EARTH_GRAVITY_MS2
             z = z * EARTH_GRAVITY_MS2
 
-        x = round(x, 4)
-        y = round(y, 4)
-        z = round(z, 4)
+        x = round(x, 6)
+        y = round(y, 6)
+        z = round(z, 6)
 
         return [x, y, z]
 
@@ -103,11 +106,19 @@ if __name__ == "__main__":
     # if run directly we'll just create an instance of the class and output 
     # the current readings
     adxl345 = ADXL345()
+    f = open('accelerometer.csv', 'w')
     
     while True:
         axes = adxl345.getAxes(True)
+        """
         print("ADXL345 on address 0x%x:" % (adxl345.address))
-        print("   x = %.3fG" % ( axes[0] ))
-        print("   y = %.3fG" % ( axes[1] ))
-        print("   z = %.3fG" % ( axes[2] ))
+        print("   x = %fG" % ( axes[0] ))
+        print("   y = %fG" % ( axes[1] ))
+        print("   z = %fG" % ( axes[2] ))
+        """
+        writer = csv.writer(f, lineterminator='\n')
+        writer.writerow([axes[0], axes[1], axes[2]])
+        print("x = %fG, \ty = %fG, \tz = %fG" % (axes[0], axes[1], axes[2]))
         sleep(1)
+    
+    f.close()
