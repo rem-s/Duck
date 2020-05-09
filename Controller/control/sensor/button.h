@@ -11,28 +11,28 @@ void init_button(int button, int pin){
     switch (button) {
         case 0:
             NUM_PORT_BUTTON_ZERO = pin;
-            pinMode(NUM_PORT_BUTTON_ZERO, INPUT);
+            pinMode(NUM_PORT_BUTTON_ZERO, INPUT_PULLDOWN);
             Serial.print(NUM_PORT_BUTTON_ZERO);
             Serial.println(" is my digital pin number, connected button zero. True.");
             break;
             
         case 1:
             NUM_PORT_BUTTON_ONE = pin;
-            pinMode(NUM_PORT_BUTTON_ONE, INPUT);
+            pinMode(NUM_PORT_BUTTON_ONE, INPUT_PULLDOWN);
             Serial.print(NUM_PORT_BUTTON_ONE);
             Serial.println(" is my digital pin number, connected button one. True.");
             break;
             
         case 2:
             NUM_PORT_BUTTON_TWO = pin;
-            pinMode(NUM_PORT_BUTTON_TWO, INPUT);
+            pinMode(NUM_PORT_BUTTON_TWO, INPUT_PULLDOWN);
             Serial.print(NUM_PORT_BUTTON_TWO);
             Serial.println(" is my digital pin number, connected button two. True.");
             break;
             
         case 3:
             NUM_PORT_BUTTON_THREE = pin;
-            pinMode(NUM_PORT_BUTTON_THREE, INPUT);
+            pinMode(NUM_PORT_BUTTON_THREE, INPUT_PULLDOWN);
             Serial.print(NUM_PORT_BUTTON_THREE);
             Serial.println(" is my digital pin number, connected button three. True.");
             break;
