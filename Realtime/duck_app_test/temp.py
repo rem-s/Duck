@@ -1,49 +1,10 @@
 from abc import ABC, abstractmethod
-###recording functionality###
+#recording functionality
 import pyaudio #handling recording function
 import wave #handling .wav file
 from os import listdir, makedirs
 import copy
-###plotting functionality###
-from PyQt5.QtWidgets import *#QMainWindow, QApplication, QWidget, QWidgetAction, QAction, QPushButton, qApp, QMdiArea
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import *
-from pyqtgraph.Qt import QtCore, QtGui
-import pyqtgraph as pg
-import numpy as np
-import sys
-import time
-import random
-from PIL import Image
-import cv2
-
-class BaseWindow(ABC):
-    
-    def __init__(self):
-        pass
-    
-    def setWindowLayout(self):
-        pass
-    
-    def setTimer(self):
-        pass
-    
-    def setActionTrig(self):
-        pass
-    
-    def update(self):
-        pass
-    
-    def getWindow(self):
-        pass
-    
-    def getWidget(self):
-        pass
-    
-    def closeWindow(self):
-        pass
-
-### end of BaseWindow
+from datetime import datetime
 
 class VoiceRecorder(object):
     
@@ -90,6 +51,9 @@ class VoiceRecorder(object):
         self.callback_on = True
         self.byte_data = bytearray()
         self.__stream.start_stream()
+        
+        self.prev = 0
+        self.next = self.__chunk*2
     
     def setConfig(self, time_sec=3, outfile=["record.wav"], device_index=1, sampling_rate=44100, chunk=2**10, \
                    format=pyaudio.paInt16, nchannels=1):
@@ -167,16 +131,44 @@ class VoiceRecorder(object):
 
 ### end of VoiceRecorder
 
+class BaseWindow(ABC):
+    
+    def __init__(self):
+        pass
+    
+    def setWindowLayout(self):
+        pass
+    
+    def setTimer(self):
+        pass
+    
+    def setActionTrig(self):
+        pass
+    
+    def update(self):
+        pass
+    
+    def getWindow(self):
+        pass
+    
+    def getWidget(self):
+        pass
+    
+    def closeWindow(self):
+        pass
+
+### end of BaseWindow
+
 class VoiceWindow(BaseWindow):
     
     def __init__(self, recorder):
         self._recorder = recorder
-        self.chunk = self._recorder.getChunk()
-        self.plot_data = np.zeros(self.chunk*2)
+        self.half_chunk = self._recorder.getChunk()//2
+        self.plot_data = np.zeros(self.half_chunk*2)
         
-        self.xrange_max = self.chunk
+        self.xrange_max = self.half_chunk
         self.prev = 0
-        self.next = self.chunk*2
+        self.next = self.half_chunk*2
         
         self.setWindowLayout()
     
@@ -209,22 +201,20 @@ class VoiceWindow(BaseWindow):
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
         print("record start recording sec: ", self._recorder.getRecordTime())
-        self._stop_timer.start(1000*self._recorder.getRecordTime()) # plot stops when record time passes
+        self._stop_timer.start(2000*self._recorder.getRecordTime()) # plot stops when record time passes
     
     def setActionTrig(self, action):
         pass
     
     def update(self):
-        next_plot = np.frombuffer(bytes(self._recorder.getByteData(self.prev, self.next)), dtype="int16") / 2**16
+        next_plot = np.frombuffer(bytes(self._recorder.getByteData(self.prev, self.next), dtype="int16") / 2**16
         self.plot_data = np.append(self.plot_data, next_plot) # Add new 1024 elements to last
         self.prev = self.next
-        self.next = self.prev + self.chunk*2
-        
-        if len(self.plot_data)%(self.chunk*2)==0:
-            self._widget.clear()
-            self.plot_data = self.plot_data[self.xrange_max:] # Remove first 1024 elements
-            self._widget.plot().setData(self.plot_data, pen="y")
-    
+        self.next = self.prev + self.half_chunk*2
+        self._widget.clear()
+        self.plot_data = self.plot_data[self.xrange_max:] # Remove first 1024 elements
+        self._widget.plot().setData(self.plot_data, pen="y")
+
     def getWindow(self):
         return self._window
     
@@ -237,83 +227,6 @@ class VoiceWindow(BaseWindow):
         self._stop_timer.stop()
         self._recorder.closeAll()
         
-class SonicWindow(BaseWindow):
-    
-    def __init__(self, tcp):
-        self.tcp = tcp
-        self.xrange_max = 50
-        self.yrange_max = 100
-        self.prev = 0
-        self.sonicDistanceList = np.zeros(self.xrange_max)
-        self.setWindowLayout()
-        
-    def setWindowLayout(self):
-        self._window = QMdiSubWindow()
-        self._window.setWindowTitle("UltrasonicDistance")
-        self._window.setWidget(pg.PlotWidget())
-        self._widget = self._window.widget()
-        ### Background colors ###
-        #blue  b
-        #green g
-        #red   r
-        #cyan (bright blue-green) c
-        #magenta (bright pink)    m
-        #yellow y
-        #black  k
-        #white  w
-        #########################
-        self._widget.setBackground('k')
-        self._widget.setTitle("distance[cm]", color="r", italic=True)
-        self._widget.setXRange(0, self.xrange_max)
-        self._widget.setYRange(0, self.yrange_max)
-        self._widget.showGrid(x=True, y=True)
-        
-    def setTimer(self):
-        self._timer = QtCore.QTimer()
-        self._timer.timeout.connect(self.update)
-        self._timer.start(60) # call plot update func every 100ms
-    
-    def setActionTrig(self):
-        pass
-    
-    def update(self):
-        msg = self.tcp.receive(3)
-        msg = int.from_bytes(msg, byteorder="big", signed=True)-100
-        #msg = np.frombuffer(msg, dtype="int16")
-        
-        """
-        #プロットするグラフを単調増加か単調減少かにする
-        # self.prevからmsgの差分をself.xrange_max個に分ける
-        if msg-self.prev > 0:
-            d = np.linspace(self.prev, msg, self.xrange_max)
-        else:
-            d = np.linspace(msg, self.prev, self.xrange_max)
-        #前回の距離を記憶
-        self.prev = msg
-        self.sonicDistanceList = np.append(self.sonicDistanceList, d)
-        """
-        
-        self.sonicDistanceList = np.append(self.sonicDistanceList, np.array(msg))
-        
-        if len(self.sonicDistanceList)%(self.xrange_max//2) == 0:
-            self.sonicDistanceList = self.sonicDistanceList[self.xrange_max//2:]
-        
-        self._widget.clear()
-        self._widget.plot().setData(self.sonicDistanceList, pen="c")
-    
-    def getWindow(self):
-        return self._window
-    
-    def getWidget(self):
-        return self._widget
-    
-    def closeWindow(self):
-        #stop Qtimer threads
-        self._timer.stop()
-        #print(self.sonicDistanceList)
-
-### end of SensorWindow
-
 class ImageWindow(BaseWindow):
     
     def __init__(self, tcp):
@@ -336,7 +249,7 @@ class ImageWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(300) # fps 15
+        self._timer.start(15) # fps 15
         
     def setActionTrig(self):
         pass
@@ -361,7 +274,7 @@ class ImageWindow(BaseWindow):
         
         #self.image = Image.fromarray(self.data)
         self._widget.setImage(self.data)
-        self._widget.getImageItem().dataTransform()
+        self._widget.getImageItem()
         #print(pixmap, pixmap.shape)
         
     def getWindow(self):
@@ -376,93 +289,29 @@ class ImageWindow(BaseWindow):
 
 ### end of class ImageWindow
 
-class AccWindow(BaseWindow):
-    
-    def __init__(self, tcp):
-        self.tcp = tcp
-        self.xrange_max = 50
-        self.yrange_max = 100
-        self.prev = 0
-        self.x_accList = np.zeros(self.xrange_max)
-        self.y_accList = np.zeros(self.xrange_max)
-        self.z_accList = np.zeros(self.xrange_max)
-        self.setWindowLayout()
-    
-    def setWindowLayout(self):
-        self._window = QMdiSubWindow()
-        self._window.setWindowTitle("AccelerationSensorValues")
-        self._window.setWidget(pg.PlotWidget())
-        self._widget = self._window.widget()
-        ### Background colors ###
-        #blue  b
-        #green g
-        #red   r
-        #cyan (bright blue-green) c
-        #magenta (bright pink)    m
-        #yellow y
-        #black  k
-        #white  w
-        #########################
-        self._widget.setBackground('k')
-        self._widget.setTitle("3axisAcc", color="r", italic=True)
-        self._widget.setXRange(0, self.xrange_max)
-        self._widget.setYRange(self.yrange_max*-1, self.yrange_max)
-        self._widget.showGrid(x=True, y=True)
-        
-    def setTimer(self):
-        self._timer = QtCore.QTimer()
-        self._timer.timeout.connect(self.update)
-        self._timer.start(60) # call plot update func every 60ms
-        
-    def setActionTrig(self):
-        pass
-    
-    def update(self):
-        x_acc = self.tcp.receive(3)
-        x_acc = int.from_bytes(x_acc, byteorder="big", signed=True)-150
-        
-        y_acc = self.tcp.receive(3)
-        y_acc = int.from_bytes(y_acc, byteorder="big", signed=True)-150
-        
-        z_acc = self.tcp.receive(3)
-        z_acc = int.from_bytes(z_acc, byteorder="big", signed=True)-150
-        
-        self.x_accList = np.append(self.x_accList, np.array(x_acc))
-        self.y_accList = np.append(self.y_accList, np.array(y_acc))
-        self.z_accList = np.append(self.z_accList, np.array(z_acc))
-        
-        if len(self.x_accList)%(self.xrange_max//2) == 0:
-            self.x_accList = self.x_accList[self.xrange_max//2:]
-            
-        if len(self.y_accList)%(self.xrange_max//2) == 0:
-            self.y_accList = self.y_accList[self.xrange_max//2:]
-            
-        if len(self.z_accList)%(self.xrange_max//2) == 0:
-            self.z_accList = self.z_accList[self.xrange_max//2:]
-        
-        self._widget.clear()
-        self._widget.plot().setData(self.x_accList, pen="r")
-        self._widget.plot().setData(self.y_accList, pen="g")
-        self._widget.plot().setData(self.z_accList, pen="b")
-
-    def getWindow(self):
-        return self._window
-    
-    def getWidget(self):
-        return self._widget
-    
-    def closeWindow(self):
-        #stop Qtimer threads
-        self._timer.stop()
-
-### end of class AccWindow
+#recording functionality
+import pyaudio #handling recording function
+import wave #handling .wav filefrom os import listdir, makedirs
+#plotting functionality
+from PyQt5.QtWidgets import *#QMainWindow, QApplication, QWidget, QWidgetAction, QAction, QPushButton, qApp, QMdiArea
+from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import *
+from pyqtgraph.Qt import QtCore, QtGui
+import pyqtgraph as pg
+import numpy as np
+import sys
+import time
+import random
+from PIL import Image
+import cv2
+#from cv2 import cv2.imdecode
 
 def DebugTrig():
     print("this is DegugTrig")
     
 class QtMultiWindow(QMainWindow):
     
-    def __init__(self, tcp_sonic, tcp_acc, tcp_image, recorder):#windowList=[voiceWin=None, imageWin=None, sensorWin=None]):
+    def __init__(self, recorder):#windowList=[voiceWin=None, imageWin=None, sensorWin=None]):
         
         super().__init__()
         self.mdi = QMdiArea()
@@ -472,11 +321,11 @@ class QtMultiWindow(QMainWindow):
         
         ### setting for sensors instance
         self._voiceWin = VoiceWindow(recorder)
-        self._sonicWin = SonicWindow(tcp_sonic)
-        self._accWin = AccWindow(tcp_acc)
-        self._imageWin = ImageWindow(tcp_image)
+        #self._sonicWin = SonicWindow(tcp_sonic)
+        #self._accWin = AccWindow(tcp_acc)
+        #self._imageWin = ImageWindow(tcp_image)
         
-        subWindowList = [self._voiceWin, self._sonicWin, self._accWin, self._imageWin]
+        subWindowList = [self._voiceWin]
         
         self.setWindowLayout()
         
@@ -487,7 +336,7 @@ class QtMultiWindow(QMainWindow):
                 subwin.getWidget().show()
                 subwin.setTimer()
         
-        self.mdi.tileSubWindows()
+        #self.mdi.tileSubWindows()
         
     def setWindowLayout(self):
         ### icon and title setting ###
@@ -560,19 +409,20 @@ class QtMultiWindow(QMainWindow):
 #end of class VoicePlotWindow
 if __name__=="__main__":
     from PyQt5.QtGui import QApplication
-    from tcp import TCP
     
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
     
-    tcp_for_sonic = TCP("192.168.10.103", 8887, server_flag=True)
-    tcp_for_acc = TCP("192.168.10.103", 8888, server_flag=True)
-    tcp_for_image = TCP("192.168.10.103", 8889, server_flag=True)
+    #tcp_for_sonic = TCP("192.168.10.103", 8887, server_flag=True)
+    #tcp_for_acc = TCP("192.168.10.103", 8888, server_flag=True)
+    #tcp_for_image = TCP("192.168.10.103", 8889, server_flag=True)
     
     recorder = VoiceRecorder()
+    #print(recorder.getDeviceIndex())
+    recorder.setDeviceIndex(1)
     
-    win = QtMultiWindow(tcp_for_sonic, tcp_for_acc, tcp_for_image, recorder)
+    win = QtMultiWindow(recorder)
     
     win.show()
     #print(win.get_device_info())
