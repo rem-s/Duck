@@ -16,7 +16,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 void init_lcd() {
   tft.initR(INITR_BLACKTAB);
-  tft.setRotation(3);
+  //tft.setRotation(3);
   tft.fillScreen(tft.color565(128, 32, 0));
   tft.setTextColor(tft.color565(255, 64, 0));
   tft.setTextWrap(false);
