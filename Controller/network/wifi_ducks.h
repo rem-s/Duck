@@ -47,6 +47,6 @@ void init_wifi(void) {
 	}
 	disp_stringln("[  OK  ]");
 	disp_string("SSID: ");
-	disp_stringln(ssid_wifis);
+	disp_stringln(SSID_WIFIS);
 	Serial.println("[SUCCESS] Connecting wireless");
 }
