@@ -1,12 +1,14 @@
 import RPi.GPIO as GPIO
 import time
 
+import temp
+
 #from network.tcp import *
 
 #tcp = TCP("192.168.0.133", 8889)
 
 class sonar:
-    def __init__(self, trigger_pin=17, echo_pin=27, start_time=0, end_time=0):
+    def __init__(self, trigger_pin=17, echo_pin=27, start_time=0, end_time=0, tempVal=20):
         """
         Parameters
         ----------
@@ -14,11 +16,13 @@ class sonar:
         echo_pin    : pin number for echo pin
         start_time  : Store the latest time when get_distance function is started
         end_time    : Store the latest time when get_distance function is ended
+        tempVal     : Temperature for calcuration distance
         """
         self.trigger_pin = trigger_pin
         self.echo_pin = echo_pin
         self.start_time = start_time
         self.end_time = end_time
+        self.tempVal = tempVal
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.trigger_pin, GPIO.OUT)
@@ -49,8 +53,16 @@ class sonar:
         # duration
         duration = (t_end - t_start) / 2
 
+        # get temperature for calclation distance
+        tempInstance = temp.DHT11(temp_pin=14)
+        tempResult = tempInstance.read()
+        if tempResult.is_valid():
+            self.tempVal = tempResult.temperature
+
+        print("temperature:", self.tempVal)
+
         # calculation distance
-        sound_speed = 331.50 + 0.61 * 15
+        sound_speed = 331.50 + 0.61 * self.tempVal
         dis = duration*sound_speed*100;
         self.end_time = time.time()
         return dis
@@ -62,4 +74,4 @@ if __name__ == "__main__":
         distance_cm = tmp.get_distance()
         print("distance:", distance_cm, "cm")
         #tcp.send(int(distance_cm).to_bytes(10, "big"))
-        time.sleep(1)
+        time.sleep(6)
