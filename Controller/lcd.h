@@ -31,7 +31,7 @@ void disp_nw() {
 	tft.setTextColor(ST77XX_BLUE);
 	tft.setTextSize(1);
 	tft.print("SSID: ");
-	//tft.print(ssid_wifis);
+	tft.print(SSID_WIFIS);
 }
 
 /*
