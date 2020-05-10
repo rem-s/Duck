@@ -41,7 +41,8 @@ void setup() {
   init_stick(32, 33);
   //tft.setRotation(3);
   delay(10000);
-  tft.fillScreen(tft.color565(255, 64, 0));
+  //tft.fillScreen(tft.color565(255, 64, 0));
+  tft.fillScreen(tft.color565(0, 0, 0));
   disp_nw();
 
 }
