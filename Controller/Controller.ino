@@ -23,6 +23,9 @@
 #include "lcd_init.h"
 #include "lcd.h"
 
+//canary: add BMX055 feature
+#include "control/sensor/gyro.h"
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);

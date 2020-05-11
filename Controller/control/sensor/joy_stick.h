@@ -1,5 +1,13 @@
-// joy_stick.h
-// author: tari
+/*
+ * joy_stick.h
+ * Shinchokuer: tari
+ *
+ * DESCRIPTION
+ *  This is to configure and use joy stick.
+ *  
+ * DEPENDENCIES
+ *  This header file doesn't need any special library,
+ */
 
 /* usage:
  * x: pin number you connected x axis.
