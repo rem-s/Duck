@@ -13,9 +13,10 @@ import pyqtgraph as pg
 import numpy as np
 import sys
 import time
-import random
-from PIL import Image
-import cv2
+#import random
+import datetime
+#from PIL import Image
+from cv2 import cvtColor, COLOR_BGR2RGB
 
 class BaseWindow(ABC):
     
@@ -114,7 +115,7 @@ class VoiceRecorder(object):
         #print(len(in_data), frame_count) #=> class "bytes", class "int"
         #if self.callback_on == True:
         self.byte_data.extend(in_data)
-        #print("time", datetime.now())
+        #print("callback time", datetime.time())
         return (None, pyaudio.paContinue)
     
     def setDeviceIndex(self, device_index):
@@ -204,12 +205,12 @@ class VoiceWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(35) # call plot update func every 35ms
+        self._timer.start(40) # call plot update func every 35ms
         
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
         print("record start recording sec: ", self._recorder.getRecordTime())
-        self._stop_timer.start(1000*self._recorder.getRecordTime()) # plot stops when record time passes
+        #self._stop_timer.start(1000*self._recorder.getRecordTime()) # plot stops when record time passes
     
     def setActionTrig(self, action):
         pass
@@ -219,8 +220,8 @@ class VoiceWindow(BaseWindow):
         self.plot_data = np.append(self.plot_data, next_plot) # Add new 1024 elements to last
         self.prev = self.next
         self.next = self.prev + self.chunk*2
-        
-        if len(self.plot_data)%(self.chunk*2)==0:
+        if len(self.plot_data)/self.chunk > 5:
+#        if len(self.plot_data)%(self.chunk)==0:
             self._widget.clear()
             self.plot_data = self.plot_data[self.xrange_max:] # Remove first 1024 elements
             self._widget.plot().setData(self.plot_data, pen="y")
@@ -234,8 +235,8 @@ class VoiceWindow(BaseWindow):
     def closeWindow(self):
         #stop Qtimer threads
         self._timer.stop()
-        self._stop_timer.stop()
-        self._recorder.closeAll()
+        #self._stop_timer.stop()
+        #self._recorder.closeAll()
         
 class SonicWindow(BaseWindow):
     
@@ -336,7 +337,7 @@ class ImageWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(300) # fps 15
+        self._timer.start(200) # fps 15
         
     def setActionTrig(self):
         pass
@@ -354,7 +355,8 @@ class ImageWindow(BaseWindow):
         #imageBGR = cv2.imdecode(self.data, cv2.IMREAD_COLOR).reshape((self.image_height, self.image_width, self.image_nchannel))
         
         self.data = self.data.reshape((self.image_height, self.image_width, self.image_nchannel))
-        self.data = cv2.cvtColor(self.data, cv2.COLOR_BGR2RGB)
+        self.data = cvtColor(self.data, COLOR_BGR2RGB)
+        self.data = self.data.transpose(1, 0, 2)
         
         #qimage = QtGui.QImage(self.data, self.image_width, self.image_height, self.image_width * 4, QtGui.QImage.Format_ARGB32_Premultiplied)
         #pixmap = QtGui.QPixmap.fromImage(qimage);
@@ -560,17 +562,19 @@ class QtMultiWindow(QMainWindow):
 #end of class VoicePlotWindow
 if __name__=="__main__":
     from PyQt5.QtGui import QApplication
-    from tcp import TCP
+    from tcp_server import TCP
     
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
     
-    tcp_for_sonic = TCP("192.168.10.103", 8887, server_flag=True)
-    tcp_for_acc = TCP("192.168.10.103", 8888, server_flag=True)
-    tcp_for_image = TCP("192.168.10.103", 8889, server_flag=True)
+    server_ip = "192.168.0.70"
+    tcp_for_sonic = TCP(server_ip, 8887, server_flag=True)
+    tcp_for_acc = TCP(server_ip, 8888, server_flag=True)
+    tcp_for_image = TCP(server_ip, 8889, server_flag=True)
     
     recorder = VoiceRecorder()
+    recorder.setDeviceIndex(1)
     
     win = QtMultiWindow(tcp_for_sonic, tcp_for_acc, tcp_for_image, recorder)
     
