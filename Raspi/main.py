@@ -2,18 +2,18 @@ from network.udp import *
 from control.motor.ta7291 import *
 
 #モーター初期化
-r_motor = TA7291P(25, 7, 27)
-l_motor = TA7291P(8, 17, 22)
+r_motor = TA7291P(25, 8, 27)
+l_motor = TA7291P(7, 17, 22)
 
 #UDP通信
-udp = UDP("192.168.0.51","192.168.0.56", 8888, 8889)
+udp = UDP("192.168.0.71","192.168.0.56", 8888, 8889)
 
 while True:
 	msg = udp.receive()
-	print(int(msg))
+	print(int.from_bytes(msg, byteorder="big", signed=True))
 	
 	#音声制御
-	if int(msg) == 0:
+	if int.from_bytes(msg, byteorder="big", signed=True) == 0:
 		r_motor.stop()
 		l_motor.stop()
 	else:
