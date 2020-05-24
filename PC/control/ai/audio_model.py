@@ -7,10 +7,10 @@ import pandas as pd
 #from os import listdir, chdir
 
 #beginning of class
-class Model:
+class Model(object):
 #static member
     __model_dict = {
-        "K-NN": "audio_model_KNN.sav",
+        "K_NN": "audio_model_KNN.sav",
         "DecisionTree": "audio_model_DT.sav"
     }
 #public methods
@@ -30,4 +30,4 @@ class Model:
 
 if __name__ == "__main__":
     model = Model()
-    model.model_select("DT")
+    model.model_select("DecisionTree")

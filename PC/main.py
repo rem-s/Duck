@@ -9,9 +9,9 @@ record = Recorder()
 outfile = record.record_voice(["a.wav"], overwrite=True)
 
 #debug print for list of output files
-print(outfile, record.get_audio_file_list())
+#print(outfile, record.get_audio_file_list())
 #get device info as dict. you have to look up this beforehand and make sure you choose correct device
-print(record.show_deviceinfo())
+#print(record.show_deviceinfo())
 
 #make an instance of MFCC taking argument of wav file
 mfcc = MFCC("./control/audioSample/a.wav")
@@ -20,8 +20,9 @@ features = mfcc.get_mfcc().reshape(1, -1)
 
 #make an instance of Model
 model = Model()
+
 #you can choose some algorithms you will use
-model.model_select("DecisionTree")
+model.model_select("K_NN")
 #predict result with model we provide
 result = model.predict(features)
 print(result)
