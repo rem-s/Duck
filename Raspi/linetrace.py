@@ -5,10 +5,13 @@ from network.tcp import *
 import numpy as np
 import cv2
 import time
+import random
 
 #通信初期化
-tcp = TCP("192.168.0.50", 8889)
-#udp = UDP("192.168.0.50", "192.168.0.139", 8888, 8889)
+tcp = TCP("192.168.0.71", 8889)
+tcp_img = TCP("192.168.0.71", 8888)
+tcp_sonic = TCP("192.168.0.71", 8887)
+tcp_acc = TCP("192.168.0.71", 8886)
 
 #モーター初期化
 l_motor = TA7291P(8, 25, 27)
@@ -19,7 +22,7 @@ KU, PU = 0.65, 0.6
 TI, TD = 0.5*PU, 0.125*PU
 ALPHA = 0.001
 target = 0 #目的角度 0[theta]
-KP, KI, KD = KU, 0.01*KP/TI, KP*TD
+KP, KI, KD = KU, 0.01*KU/TI, KU*TD
 params = [0, KP, KI, KD, 0, 0] #DELTA_T, KP, KI, KD, deviation, integral
 
 #画像データ取得
@@ -33,7 +36,18 @@ jpegstring=encimg.tostring()
 while True:	
 
 	#画像データ送信
-	tcp.send(jpegstring) 
+	tcp.send(jpegstring)
+	tcp_img.send(img) 
+	
+	sendnum = random.randint(0, 100)+100
+	sendsize = len(str(sendnum))
+	tcp_sonic.send(sendnum.to_bytes(sendsize, byteorder="big"))
+	
+	sendlist = [0, 0, 0]
+	for i in range(3):
+		sendlist[i] = random.randint(-50, 50)+150
+		sendsize = len(str(sendlist[i]))
+		tcp_acc.send(sendlist[i].to_bytes(sendsize, byteorder="big"))
 	
 	#画像データ取得
 	start_time = time.time()
