@@ -20,17 +20,20 @@
 #include "network/wifi_ducks.h"
 #include "control/sensor/button.h"
 #include "control/sensor/joy_stick.h"
+#include "control/sensor/gyro.h"
 #include "lcd_init.h"
 #include "lcd.h"
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Wire.begin();
   pinMode(13, OUTPUT);
   pinMode(14, OUTPUT);
   digitalWrite(13, HIGH);
   digitalWrite(14, HIGH);
   init_lcd();
+  init_gyro();
   init_wifi();
   //init_bt();
   init_udp(8889, "192.168.0.58"); // (port, address)
