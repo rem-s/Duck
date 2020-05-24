@@ -16,6 +16,7 @@ import os
 fps, img_n = 0, 0
 img_dir = "./img"
 tcp = TCP("192.168.0.71", 8889, server_flag=True)
+
 height, width, channel = int(480/8), int(640/8), 3
 target_height, target_bottom = int(height/3), height-10
 indexs_flat, indexs_dim = target_indexs(height, width, target_height=target_height)
@@ -71,8 +72,8 @@ while True:
 	img = cv2.putText(img, '%d'%(degree), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
 	
 	#画像表示
-	cv2.imshow("",img)
-	cv2.waitKey(1)
+	#cv2.imshow("",img)
+	#cv2.waitKey(1)
 	
 	#画像保存
 	img_n += 1
@@ -82,5 +83,5 @@ while True:
 	#FPS算出
 	fps += 1/(time.time()-start)
 	print(fps/img_n)
-
+	
 cv2.destroyAllWindows()

@@ -1,14 +1,15 @@
 import pyaudio #handling recording function
 import wave #handling .wav file
-from os import listdir, remove, makedirs
-from shutil import move, copy2, copyfile
+from os import listdir, makedirs
+import numpy as np
+import sys
 
 #beginning of class Recorder
-class Recorder:
+class Recorder(object):
 #public methods
     def __init__(self):
         # recording time (unit: s)
-        self.__record_time = 3
+        self.__record_time = 5
         # file name
         self.__output_wavfile = ["record.wav"]
         # index number of microphone
@@ -25,10 +26,9 @@ class Recorder:
         self.__audio = pyaudio.PyAudio()
         # instance of stream obj for making wav file
         self.__stream = None
+
+        self.byte_data = []
     
-    def __exit__(self):
-        self.__close()
-        
     def set_config(self, time_sec=3, outfile=["record.wav"], device_index=1, sampling_rate=44100, chunk=2**10, format=pyaudio.paInt16, nchannels=1):
         # configure foundimental information
 
@@ -47,55 +47,64 @@ class Recorder:
         # monaural
         self.__nchannels = nchannels
     
-    def show_deviceinfo(self):
-        for i in range(self.__audio.get_device_count()):
-            print(self.__audio.get_device_info_by_index(i))
-    
-    def get_audio_file_list(self):
+    def get_chunk(self):
+        return self.__chunk
+
+    def get_output_file_list(self):
         return self.__output_wavfile
     
+    def get_device_info(self):
+        for i in range(self.__audio.get_device_count()):
+            print(self.__audio.get_device_info_by_index(i))
+
     def record_voice(self, wfile_list=["record.wav"], dst="./control/audioSample/", overwrite=False) -> list:
         if dst[-1] != "/":
             print("Destination must be ended with \"/\"")
             raise NotADirectoryError
 
-        for w in wfile_list:
-            #audio.open() method returns new Stream instance taking some arguments for configuration
-            self.__stream = self.__audio.open(
+        makedirs(dst, exist_ok=True) # check if dst already exists. If doesn't, make new dir
+        if overwrite == False and set.intersection(set(wfile_list), listdir(dst)) != set():
+            print("Same wavfile exists in {0}\nYou were about to overwrite {1}\nIf you wouldn't mind it, set overwrite flag True".format(dst, dst+w))
+            raise FileExistsError
+
+        #audio.open() method returns a new Stream instance taking some arguments for configuration
+        self.__stream = self.__audio.open(
             format = self.__format,
             channels = self.__nchannels,
             rate = self.__sampling_rate,
             input = True,
+            output = False,
             input_device_index = self.__idevice, # device1(Mouse_mic) will be used for input device
-            frames_per_buffer = self.__chunk)
-
+            frames_per_buffer = self.__chunk
+        )
+        write_to_stream_time = int(self.__sampling_rate * self.__record_time / self.__chunk)
+        for w in wfile_list:
             print("Start recording...")
-            frames = []
-            for i in range(0, int(self.__sampling_rate / self.__chunk * self.__record_time)):
-                data = self.__stream.read(self.__chunk) # chunkごとにdataを書き出す write raw data at each chunk
-                frames.append(data)
-            print("Finished recording\nOutput_file was generated\n")
-            
-            makedirs(dst, exist_ok=True) # check if dst already exists. If doesn't, make new dir
-            if overwrite == False and w in listdir(dst):
-                print("Same wavfile exists in {}\nYou were about to overwrite {}\nIf you wouldn't mind it, set overwrite flag True".format(dst, dst+w))
-                raise OSError
-            self.__prepare_file(frames, dst+w)
+            #self.byte_data = [self.__stream.read(self.__chunk) for _ in range(write_to_stream_time)]
+            self.byte_data = []
+            for i in range(0, write_to_stream_time):
+                data = self.__stream.read(self.__chunk) #write raw data in the stream at each chunk
+                self.byte_data.append(data)
+            print("Finished recording")
+            #self.__make_wav_file(self.byte_data, dst+w)
+            print("Wav file was generated\n")
         self.__output_wavfile = wfile_list
-        return wfile_list
+        self.__close_all()
+        return self.__output_wavfile
 
 #private methods          
-    def __prepare_file(self, frames, wfile, mode='wb'):
+    def __make_wav_file(self, frames, wfile, mode='wb'):
         wavefile = wave.open(wfile, mode)
         wavefile.setnchannels(self.__nchannels)
         wavefile.setsampwidth(self.__audio.get_sample_size(self.__format))
         wavefile.setframerate(self.__sampling_rate)
         wavefile.writeframes(b"".join(frames))
+        wavefile.close()
         return wfile
 
-    def __close(self):
+    def __close_all(self):
         self.__stream.close()
         self.__audio.terminate()
-        self.__output_wavfile.close()
+        print("pyaudio was terminated")
 
 #end of class Recorder
