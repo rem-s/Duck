@@ -2,24 +2,31 @@ from control.motor.ta7291 import *
 from control.process.pid import *
 from network.udp import *
 from network.tcp import * 
+from control.sensor.adxl345 import *
+from control.sensor.sonar import *
 import numpy as np
 import cv2
 import time
+import random
 
 #通信初期化
-tcp = TCP("192.168.0.50", 8889)
-#udp = UDP("192.168.0.50", "192.168.0.139", 8888, 8889)
+tcp = TCP("192.168.0.71", 8889)
+tcp_img = TCP("192.168.0.71", 8888)
+tcp_sonic = TCP("192.168.0.71", 8887)
+tcp_acc = TCP("192.168.0.71", 8886)
 
-#モーター初期化
+#センサ初期化
 l_motor = TA7291P(8, 25, 27)
 r_motor = TA7291P(17, 7, 22)
+adxl345 = ADXL345()
+sonic = sonar()
 
 # PIDパラメーター
 KU, PU = 0.65, 0.6
 TI, TD = 0.5*PU, 0.125*PU
 ALPHA = 0.001
 target = 0 #目的角度 0[theta]
-KP, KI, KD = KU, 0.01*KP/TI, KP*TD
+KP, KI, KD = KU, 0.01*KU/TI, KU*TD
 params = [0, KP, KI, KD, 0, 0] #DELTA_T, KP, KI, KD, deviation, integral
 
 #画像データ取得
@@ -33,7 +40,17 @@ jpegstring=encimg.tostring()
 while True:	
 
 	#画像データ送信
-	tcp.send(jpegstring) 
+	tcp.send(jpegstring)
+	tcp_img.send(img) 
+	
+	distance = int(sonic.get_distance())
+	sendsize = len(str(distance))
+	tcp_sonic.send(distance.to_bytes(sendsize, byteorder="big"))
+	
+	axes = adxl345.getAxes(True)
+	for i in range(3):
+		sendsize = len(str(axes[i]))
+		tcp_acc.send(axes[i].to_bytes(sendsize, byteorder="big"))
 	
 	#画像データ取得
 	start_time = time.time()

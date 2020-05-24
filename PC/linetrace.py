@@ -21,7 +21,6 @@ target_height, target_bottom = int(height/3), height-10
 indexs_flat, indexs_dim = target_indexs(height, width, target_height=target_height)
 if not os.path.exists(img_dir): os.mkdir(img_dir)
 
-
 #インスタンス生成(レコード, モデル[決定木], UDP)
 record = Recorder()
 model = Model()
