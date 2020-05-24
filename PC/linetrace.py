@@ -11,7 +11,6 @@ import cv2
 import time
 import os
 
-
 #画像処理初期化
 fps, img_n = 0, 0
 img_dir = "./img"
@@ -72,8 +71,8 @@ while True:
 	img = cv2.putText(img, '%d'%(degree), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
 	
 	#画像表示
-	#cv2.imshow("",img)
-	#cv2.waitKey(1)
+	cv2.imshow("",img)
+	cv2.waitKey(1)
 	
 	#画像保存
 	img_n += 1

@@ -201,7 +201,7 @@ class VoiceWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(40) # call plot update func every 35ms
+        self._timer.start(10) # call plot update func every 35ms
         
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
@@ -268,7 +268,7 @@ class SonicWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(60) # call plot update func every 100ms
+        self._timer.start(50) # call plot update func every 100ms
     
     def setActionTrig(self):
         pass
@@ -316,7 +316,7 @@ class ImageWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(200) # fps 15
+        self._timer.start(50) # fps 15
         
     def setActionTrig(self):
         pass
@@ -393,7 +393,7 @@ class AccWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(60) # call plot update func every 60ms
+        self._timer.start(50) # call plot update func every 60ms
         
     def setActionTrig(self):
         pass

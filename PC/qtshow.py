@@ -1,3 +1,4 @@
+from network.tcp import * 
 from control.gui.qtwindow import *
 from PyQt5.QtGui import QApplication
 
