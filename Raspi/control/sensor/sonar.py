@@ -1,53 +1,77 @@
-# import RPi.GPIO as GPIO
-# import time
-# import csv
-# import numpy as np
+import RPi.GPIO as GPIO
+import time
 
-# trigger_pin = 17
-# echo_pin = 23
+import temp
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(trigger_pin, GPIO.OUT)
-# GPIO.setup(echo_pin, GPIO.IN)
+#from network.tcp import *
+
+#tcp = TCP("192.168.0.133", 8889)
 
 class sonar:
-    def __init__(self):
-        pass
+    def __init__(self, trigger_pin=17, echo_pin=27, start_time=0, end_time=0, tempVal=20):
+        """
+        Parameters
+        ----------
+        trigger_pin : pin number for trigger pin
+        echo_pin    : pin number for echo pin
+        start_time  : Store the latest time when get_distance function is started
+        end_time    : Store the latest time when get_distance function is ended
+        tempVal     : Temperature for calcuration distance
+        """
+        self.trigger_pin = trigger_pin
+        self.echo_pin = echo_pin
+        self.start_time = start_time
+        self.end_time = end_time
+        self.tempVal = tempVal
 
-    def send_trigger_pulse():
-        GPIO.output(trigger_pin, True)
-        time.sleep(0.0001)
-        GPIO.output(trigger_pin, False)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.trigger_pin, GPIO.OUT)
+        GPIO.setup(self.echo_pin, GPIO.IN)
 
-    def wait_for_echo(value, timeout):
-        count = timeout
-        while GPIO.input(echo_pin) != value and count > 0:
-            count = count - 1
+    def get_distance(self):
+        """
+        Return
+        ----------
+        dis : distance (cm) float
+        """
+        # check iteration time > 60[msec]
+        iter_time = self.end_time - self.start_time
+        if iter_time < 0.060: time.sleep(0.06 - iter_time)
 
-    def get_distance():
-        send_trigger_pulse()
-        wait_for_echo(True, 10000)
-        start = time.time()
-        wait_for_echo(False, 10000)
-        finish = time.time()
-        pulse_len = finish - start
-        distance_cm = pulse_len / 0.0000580
-        distance_in = distance_cm / 2.5
-        #return (distance_cm, distance_in)
-        return distance_cm
+        # 10usec output high [trigger pin]
+        self.start_time = time.time()
+        GPIO.output(self.trigger_pin, GPIO.HIGH)
+        time.sleep(0.000010)
+        GPIO.output(self.trigger_pin, GPIO.LOW)
+
+        # waiting for high signal 
+        while GPIO.input(self.echo_pin) == 0: t_start = time.time()
+
+        # waiting for finish signal
+        while GPIO.input(self.echo_pin) == 1: t_end = time.time()
+
+        # duration
+        duration = (t_end - t_start) / 2
+
+        # get temperature for calclation distance
+        tempInstance = temp.DHT11(temp_pin=14)
+        tempResult = tempInstance.read()
+        if tempResult.is_valid():
+            self.tempVal = tempResult.temperature
+
+        print("temperature:", self.tempVal)
+
+        # calculation distance
+        sound_speed = 331.50 + 0.61 * self.tempVal
+        dis = duration*sound_speed*100;
+        self.end_time = time.time()
+        return dis
 
 if __name__ == "__main__":
     tmp = sonar()
 
-    f = open('distance.csv', 'w')
-
-    #while True:
-    for _ in range(20):
-        #print("cm=%f\tinches=%f" % tmp.get_distance())
+    while True:
         distance_cm = tmp.get_distance()
-        print("cm=", distance_cm)
-        writer = csv.writer(f, lineterminator='\n')
-        writer.writerow([distance_cm])
-        time.sleep(1)
-
-    f.close()
+        print("distance:", distance_cm, "cm")
+        #tcp.send(int(distance_cm).to_bytes(10, "big"))
+        time.sleep(6)
