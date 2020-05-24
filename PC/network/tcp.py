@@ -16,7 +16,7 @@ class TCP:
 		if self.server_flag:
 			self.soc = socket(AF_INET, SOCK_STREAM)
 			self.soc.bind((self.server_ip, self.port))
-			self.soc.listen(10) # wait for 10 sec
+			self.soc.listen(10)
 			
 			print("waiting for connection....")
 			self.client_soc, self.client_ip = self.soc.accept()
@@ -25,6 +25,8 @@ class TCP:
 		else:
 			self.soc = socket(AF_INET, SOCK_STREAM)
 			self.soc.connect((self.server_ip, self.port))
+		
+		print("connected")
 		
 	#TCP receive
 	def receive(self, size):

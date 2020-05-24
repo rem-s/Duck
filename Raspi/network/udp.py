@@ -18,10 +18,10 @@ class UDP:
 		self.socket = socket(AF_INET, SOCK_DGRAM)
 		self.socket.bind((self.slave_ip, self.rport))
 		
-	def receive(self):
+	def receive(self, size):
 		
 		#receiving data
-		data, addr = self.socket.recvfrom(1024)
+		data, addr = self.socket.recvfrom(size)
 		return data
 		
 	def send(self, data):

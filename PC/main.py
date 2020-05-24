@@ -21,4 +21,4 @@ while True:
 	
 	#認識結果をraspberry piに送信し制御
 	udp.send(int(result).to_bytes(1, 'big'))
-	
+	zz
