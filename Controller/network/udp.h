@@ -35,12 +35,12 @@ char str[50];
 }
 
 void send_udp(int content_send) {
-  Serial.println("I will send a character to the client, it is");
-  Serial.println("----------");
-  Serial.println(content_send);
-  Serial.println("----------");
+  //Serial.println("I will send a character to the client, it is");
+  //Serial.println("----------");
+  //Serial.println(content_send);
+  //Serial.println("----------");
   wifiUdp.beginPacket(addr_ip_remote, port_udp_remote);
   wifiUdp.write(content_send);
   wifiUdp.endPacket();
-  Serial.println("I sent that.");
+  //Serial.println("I sent that.");
 }

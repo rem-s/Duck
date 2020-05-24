@@ -27,8 +27,8 @@ int get_value_stick_x(){
     else {
         value_x = value_x - 2048;
     }
-    Serial.print("Value X: ");
-    Serial.println(value_x);
+    //Serial.print("Value X: ");
+    //Serial.println(value_x);
 	return value_x;
 }
 
@@ -41,7 +41,7 @@ int get_value_stick_y(){
     else {
         value_y = value_y - 2048;
     }
-    Serial.print("Value Y: ");
-    Serial.println(value_y);
+    //Serial.print("Value Y: ");
+    //Serial.println(value_y);
     return value_y;
 }

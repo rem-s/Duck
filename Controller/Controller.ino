@@ -27,6 +27,13 @@
 #include "lcd.h"
 
 
+extern void disp_string(char*);
+extern void disp_stringln(char*);
+extern void disp_staff();
+
+int flag_button0 = 0;
+int flag_button1 = 0;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -46,7 +53,7 @@ void setup() {
   init_button(3, 0);
   init_stick(32, 33);
   //tft.setRotation(3);
-  delay(10000);
+  delay(5000);
   //tft.fillScreen(tft.color565(255, 64, 0));
   tft.fillScreen(tft.color565(0, 0, 0));
   disp_nw();
@@ -63,19 +70,22 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
   static String sendval;
-  if (get_status_button(0) == 1) {
+  if (get_status_button(0) == 1 && flag_button0 == 0) {
     digitalWrite(13, HIGH);
+    flag_button0 = 1;
     cmd_history(9);
-  } else {
+  } else if(get_status_button(0) == 0) {
     digitalWrite(13, LOW);
+    flag_button0 = 0;
   }
-  if (get_status_button(1) == 1) {
+  if (get_status_button(1) == 1 && flag_button1 == 0) {
     digitalWrite(14, HIGH);
+    flag_button1 = 1;
     cmd_history(10);
-  } else {
+  } else if(get_status_button(1) == 0){
     digitalWrite(14, LOW);
+    flag_button1 = 0;
   }
   if (get_value_stick_y() > 1024) {
     if (get_value_stick_x() > 1024) {
@@ -91,7 +101,7 @@ void loop() {
     else {
       send_udp('1');
       disp_direc(1);
-      //cmd_history(1);
+      cmd_history(1);
     }
   }
   else if (get_value_stick_y() < -1024) {
@@ -126,13 +136,27 @@ void loop() {
     else {
       send_udp('0');
       disp_direc(0);
+      cmd_history(0);
     }
   }
   delay(20);
 }
+
+/*
+  KONAMI COMMAND
+*/
+
 void cmd_history(int cmd) {
+  static int old = 0;
   static int history[10];
   static int init_flag = 0;
+  if (cmd == 0) {
+    old = 0;
+    return;
+  }
+  if (old == cmd) {
+    return;
+  }
   int count = 0;
   if (init_flag == 0) {
     for (count = 0 ; count <= 9 ; count++) {
@@ -143,21 +167,28 @@ void cmd_history(int cmd) {
   Serial.println("111");
   //14148787X9
   for (count = 0 ; count <= 9 ; count++) {
-    history[count + 1] = history[count];
+    history[count] = history[count + 1];
   }
   history[9] = cmd;
+  old = cmd;
+  for (count = 0 ; count <= 9 ; count++) {
+    Serial.print(history[count]);
+    Serial.print(" ");
+  }
+  Serial.println(" ");
   if (history[0] == 1) {
-    if (history[1] == 4) {
-      if (history[2] == 1) {
+    if (history[1] == 1) {
+      if (history[2] == 4) {
         if (history[3] == 4) {
           if (history[4] == 8) {
             if (history[5] == 7) {
               if (history[6] == 8) {
                 if (history[7] == 7) {
-                  if (history[8] == 10) {
-                    if (history[9] == 9) {
-                      init_lcd();
-
+                  if (history[8] == 9) {
+                    if (history[9] == 10) {
+                      disp_staff();
+                      tft.fillScreen(tft.color565(0, 0, 0));
+                      disp_nw();
                     }
                   }
                 }
