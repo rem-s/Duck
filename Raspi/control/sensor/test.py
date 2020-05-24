@@ -1,0 +1,3 @@
+import acc
+
+print('world')
