@@ -15,12 +15,7 @@ if not os.path.exists(img_dir): os.mkdir(img_dir)
 
 #画像インデックス取得
 height, width, channel = int(480/8), int(640/8), 3
-target_height, target_bottom = int(height/3), height-10
-indexs_flat, indexs_dim = target_indexs(height, width, target_height=target_height)
-print(indexs_flat)
-
-tcp = TCP("192.168.0.50", 8889, server_flag=True)
-#udp = UDP("192.168.0.139", "192.168.0.50", 8889, 8888)
+tcp = TCP("192.168.0.88", 8889, server_flag=True)
 
 while True:
 	
@@ -32,8 +27,8 @@ while True:
 	
 	#ライン検出
 	grayFrame = cv2.cvtColor(raw_img, cv2.COLOR_BGR2GRAY)
-	b_img = mean_binarize(grayFrame, indexs=indexs_flat)
-	l_img = labeling(b_img, indexs=indexs_dim)
+	b_img = mean_binarize(grayFrame)
+	l_img = labeling(b_img)
 	r_img = compare_area(l_img)
 	
 	#画像から回転角度算出

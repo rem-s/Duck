@@ -2,10 +2,10 @@
 import numpy as np
 
 #大津の二値化
-def otsu_binarize(img, indexs):
+def otsu_binarize(img):
     
     #初期化
-    img_flat = img.reshape(-1)[indexs]
+    img_flat = img.reshape(-1)
     Imax, Imin = np.max(img_flat), np.min(img_flat)
     thr_range = np.linspace(Imin, Imax, 100)
     S, thrs = [0], [0]
@@ -34,10 +34,10 @@ def otsu_binarize(img, indexs):
     return binarize_img
 	
 #中央値による二値化
-def med_binarize(img, indexs):
+def med_binarize(img):
 	
 	#初期化
-	img_flat = img.reshape(-1)[indexs]
+	img_flat = img.reshape(-1)
 	Imedian = np.median(img_flat)
 	
 	#二値化画像生成
@@ -46,10 +46,10 @@ def med_binarize(img, indexs):
 	return binarize_img
 	
 #平均値による二値化
-def mean_binarize(img, indexs):
+def mean_binarize(img):
 	
 	#初期化
-	img_flat = img.reshape(-1)[indexs]
+	img_flat = img.reshape(-1)
 	Imean = np.mean(img_flat)
 	
 	#二値化画像生成
@@ -88,7 +88,7 @@ def neighbor(img, x, y, lookup_table):
 	return min_label, lookup_table
 	
 #画像8近傍ラベリング [高速化必要]
-def labeling(img, indexs):
+def labeling(img):
 
 	#初期化
 	label = 0
@@ -97,25 +97,28 @@ def labeling(img, indexs):
 	lookup_table = np.arange(width * height)
 	
 	#画像探索
-	for (h, w) in indexs:
+	for h in range(height):
+		for w in range(width):
 		
-		#画像中の黒成分の探索
-		if img[h][w] == 0:
-			min_label, lookup_table = neighbor(label_img, w, h, lookup_table)
+			#画像中の黒成分の探索
+			if img[h][w] == 0:
+				min_label, lookup_table = neighbor(label_img, w, h, lookup_table)
+				
+				#近傍ラベルが0の場合
+				if min_label == 0:
+					label += 1
+					label_img[h][w] = label
+				
+				#近傍ラベルの最小ラベルを割り当てる
+				else: label_img[h][w] = min_label
 			
-			#近傍ラベルが0の場合
-			if min_label == 0:
-				label += 1
-				label_img[h][w] = label
-			
-			#近傍ラベルの最小ラベルを割り当てる
-			else: label_img[h][w] = min_label
+			#画像中の白成分の探索
+			else: label_img[h][w] = 0
 		
-		#画像中の白成分の探索
-		else: label_img[h][w] = 0
-	
 	#ルックアップテーブルによるラベル更新
-	for (h, w) in indexs: label_img[h][w] = lookup_table[int(label_img[h][w])]
+	for h in range(height):
+		for w in range(width):
+			label_img[h][w] = lookup_table[int(label_img[h][w])]
 	
 	return label_img
 	
