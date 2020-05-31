@@ -2,6 +2,8 @@
 Projekt Duck<br>
 ### Duck the Karugamo projekt
 
+This branch is no longer used...
+
 部員向けにGitコマンドのチートシートを置いておく。(部長の個人的なメモ)
 
 ## git cmd ch sh
