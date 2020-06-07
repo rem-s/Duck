@@ -3,42 +3,15 @@ from network.tcp import *
 from control.process.image import *
 from PIL import Image
 import matplotlib.pyplot as plt
-#from control.ai.audio_model import *
-#from control.process.mfcc import *
-#from control.sensor.mic import Recorder
 import numpy as np
 import cv2
-import time
 import os
 
 #画像処理初期化
 fps, img_n = 0, 0
 img_dir = "./img"
 tcp = TCP("192.168.0.68", 8889, server_flag=True)
-
-height, width, channel = int(480/8), int(640/8), 3
-target_height, target_bottom = int(height/3), height-10
-indexs_flat, indexs_dim = target_indexs(height, width, target_height=target_height)
 if not os.path.exists(img_dir): os.mkdir(img_dir)
-
-#インスタンス生成(レコード, モデル[決定木], UDP)
-#record = Recorder()
-#model = Model()
-#model.model_select("K-NN")
-
-#音声認識[前と言ったら動きだす]
-result = 1
-#print("start recoding")
-#while result:
-
-	#レコードとMFCC
-	#outfile = record.record_voice(["a.wav"], overwrite=True)
-	#mfcc = MFCC("./control/audioSample/a.wav")
-	#features = mfcc.get_mfcc().reshape(1, -1)
-	
-	#音声認識
-	#result = model.predict(features)
-	#print(result)
 
 #画像処理[ライントレース]
 while True:

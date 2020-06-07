@@ -1,11 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
-import temp
-
-#from network.tcp import *
-
-#tcp = TCP("192.168.0.133", 8889)
+from control.sensor import temp
 
 class sonar:
     def __init__(self, trigger_pin=17, echo_pin=27, start_time=0, end_time=0, tempVal=20):
@@ -68,10 +64,10 @@ class sonar:
         return dis
 
 if __name__ == "__main__":
-    tmp = sonar()
+    tmp = sonar(trigger_pin=18, echo_pin=23)
 
     while True:
         distance_cm = tmp.get_distance()
         print("distance:", distance_cm, "cm")
         #tcp.send(int(distance_cm).to_bytes(10, "big"))
-        time.sleep(6)
+        time.sleep(1)

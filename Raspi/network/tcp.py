@@ -25,7 +25,7 @@ class TCP:
 		else:
 			self.soc = socket(AF_INET, SOCK_STREAM)
 			self.soc.connect((self.server_ip, self.port))
-		
+
 	#TCP receive
 	def receive(self, size):
 		if self.server_flag: return self.client_soc.recv(size)

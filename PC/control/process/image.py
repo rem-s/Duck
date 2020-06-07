@@ -1,5 +1,6 @@
 #画像処理
 import numpy as np
+from numba import jit
 
 #大津の二値化
 def otsu_binarize(img, indexs):
@@ -257,3 +258,35 @@ def iHSV(img, alpha=1):
     RGB_pixels = RGB_pixels.reshape(height, width, 3)*alpha
     RGB_pixels = np.where(RGB_pixels>1.0, 1.0, RGB_pixels)
     return RGB_pixels
+	
+# モーメント特徴量
+@jit
+def morment(img, p, q, target=1):
+    height, width = img.shape
+    
+    m = 0
+    for h in range(height):
+        for w in range(width):
+            m += (img[h][w] == target) * (h ** p) * (w ** q)
+    return m
+	
+# 重心
+def center_grav(img, target=1):
+    m1 = morment(img, 1, 0)
+    m2 = morment(img, 0, 0)
+    grab_x=m1/m2
+    
+    m1 = morment(img, 0, 1)
+    m2 = morment(img, 0, 0)
+    grab_y=m1/m2
+    
+    return(int(grab_y), int(grab_x))
+	
+# 主軸方向
+def pricipal_axis(img, target=1):
+    
+    A = (morment(img, 2, 0)-morment(img, 0, 2))/morment(img, 1, 1)
+    y1 = (-1*A+np.sqrt(A**2+4))/2
+    theta1 = np.arctan(y1)
+    
+    return np.rad2deg(theta1)

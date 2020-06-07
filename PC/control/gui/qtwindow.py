@@ -205,7 +205,7 @@ class VoiceWindow(BaseWindow):
         
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
-        print("record start recording sec: ", self._recorder.getRecordTime())
+        #print("record start recording sec: ", self._recorder.getRecordTime())
         #self._stop_timer.start(1000*self._recorder.getRecordTime()) # plot stops when record time passes
     
     def setActionTrig(self, action):
