@@ -10,16 +10,16 @@ import time
 import random
 
 #通信初期化
-tcp = TCP("192.168.0.71", 8889)
-tcp_img = TCP("192.168.0.71", 8888)
-tcp_sonic = TCP("192.168.0.71", 8887)
-tcp_acc = TCP("192.168.0.71", 8886)
+tcp_sonic = TCP("192.168.0.68", 37546)
+tcp_acc = TCP("192.168.0.68", 37547)
+tcp_img = TCP("192.168.0.68", 37548)
+tcp = TCP("192.168.0.68", 8889)
 
 #センサ初期化
 l_motor = TA7291P(8, 25, 27)
 r_motor = TA7291P(17, 7, 22)
 adxl345 = ADXL345()
-sonic = sonar()
+sonic = sonar(trigger_pin=18, echo_pin=23)
 
 # PIDパラメーター
 KU, PU = 0.65, 0.6
@@ -50,7 +50,7 @@ while True:
 	axes = adxl345.getAxes(True)
 	for i in range(3):
 		sendsize = len(str(axes[i]))
-		tcp_acc.send(axes[i].to_bytes(sendsize, byteorder="big"))
+		tcp_acc.send(int(axes[i]).to_bytes(sendsize, byteorder="big"))
 	
 	#画像データ取得
 	start_time = time.time()

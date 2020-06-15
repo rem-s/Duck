@@ -248,7 +248,6 @@ def iHSV(img, alpha=1):
     RGB_pixels = np.where(RGB_pixels>1.0, 1.0, RGB_pixels)
     return RGB_pixels
 	
-	
 # モーメント特徴量
 @jit
 def morment(img, p, q, target=1):
@@ -258,6 +257,7 @@ def morment(img, p, q, target=1):
     for h in range(height):
         for w in range(width):
             m += (img[h][w] == target) * (h ** q) * (w ** p)
+
     return m
 	
 # 重心
@@ -268,6 +268,7 @@ def center_grav(img, target=1):
     
     m1 = morment(img, 0, 1, target=target)
     m2 = morment(img, 0, 0, target=target)
+
     grab_y=m1/m2
     
     return(int(grab_y), int(grab_x))
@@ -293,3 +294,4 @@ def grav_degree(img, target=1):
     degree = int(theta * 180 / np.pi)
     
     return degree, [grav_y, grav_x]
+

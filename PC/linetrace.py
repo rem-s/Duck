@@ -17,6 +17,24 @@ if not os.path.exists(img_dir): os.mkdir(img_dir)
 height, width, channel = int(480/8), int(640/8), 3
 tcp = TCP("192.168.0.60", 8890, server_flag=True)
 
+#インスタンス生成(レコード, モデル[決定木], UDP)
+#record = Recorder()
+#model = Model()
+#model.model_select("K-NN")
+
+#音声認識[前と言ったら動きだす]
+#print("start recoding")
+#while result:
+
+	#レコードとMFCC
+	#outfile = record.record_voice(["a.wav"], overwrite=True)
+	#mfcc = MFCC("./control/audioSample/a.wav")
+	#features = mfcc.get_mfcc().reshape(1, -1)
+	
+	#音声認識
+	#result = model.predict(features)
+	#print(result)
+
 while True:
 	
 	#TCP画像受信
