@@ -1,11 +1,12 @@
 #画像処理
 import numpy as np
+from numba import jit
 
 #大津の二値化
-def otsu_binarize(img, indexs):
+def otsu_binarize(img):
     
     #初期化
-    img_flat = img.reshape(-1)[indexs]
+    img_flat = img.reshape(-1)
     Imax, Imin = np.max(img_flat), np.min(img_flat)
     thr_range = np.linspace(Imin, Imax, 100)
     S, thrs = [0], [0]
@@ -34,10 +35,10 @@ def otsu_binarize(img, indexs):
     return binarize_img
 	
 #中央値による二値化
-def med_binarize(img, indexs):
+def med_binarize(img):
 	
 	#初期化
-	img_flat = img.reshape(-1)[indexs]
+	img_flat = img.reshape(-1)
 	Imedian = np.median(img_flat)
 	
 	#二値化画像生成
@@ -46,10 +47,10 @@ def med_binarize(img, indexs):
 	return binarize_img
 	
 #平均値による二値化
-def mean_binarize(img, indexs):
+def mean_binarize(img):
 	
 	#初期化
-	img_flat = img.reshape(-1)[indexs]
+	img_flat = img.reshape(-1)
 	Imean = np.mean(img_flat)
 	
 	#二値化画像生成
@@ -88,7 +89,7 @@ def neighbor(img, x, y, lookup_table):
 	return min_label, lookup_table
 	
 #画像8近傍ラベリング [高速化必要]
-def labeling(img, indexs):
+def labeling(img):
 
 	#初期化
 	label = 0
@@ -97,25 +98,28 @@ def labeling(img, indexs):
 	lookup_table = np.arange(width * height)
 	
 	#画像探索
-	for (h, w) in indexs:
+	for h in range(height):
+		for w in range(width):
 		
-		#画像中の黒成分の探索
-		if img[h][w] == 0:
-			min_label, lookup_table = neighbor(label_img, w, h, lookup_table)
+			#画像中の黒成分の探索
+			if img[h][w] == 0:
+				min_label, lookup_table = neighbor(label_img, w, h, lookup_table)
+				
+				#近傍ラベルが0の場合
+				if min_label == 0:
+					label += 1
+					label_img[h][w] = label
+				
+				#近傍ラベルの最小ラベルを割り当てる
+				else: label_img[h][w] = min_label
 			
-			#近傍ラベルが0の場合
-			if min_label == 0:
-				label += 1
-				label_img[h][w] = label
-			
-			#近傍ラベルの最小ラベルを割り当てる
-			else: label_img[h][w] = min_label
+			#画像中の白成分の探索
+			else: label_img[h][w] = 0
 		
-		#画像中の白成分の探索
-		else: label_img[h][w] = 0
-	
 	#ルックアップテーブルによるラベル更新
-	for (h, w) in indexs: label_img[h][w] = lookup_table[int(label_img[h][w])]
+	for h in range(height):
+		for w in range(width):
+			label_img[h][w] = lookup_table[int(label_img[h][w])]
 	
 	return label_img
 	
@@ -145,21 +149,7 @@ def image_line_degree(img):
 	if (ave_upper_index - ave_under_index)/(upper_extraction - under_extraction) > 0: theta = -1 * theta
 	theta = theta * 180 / np.pi
 	return int(theta), upper_extraction, under_extraction, int(ave_upper_index), int(ave_under_index)
-	
-#画像中のindex関数
-#def f1(x, h, w): return (-1*(w/h)*(x-h)).astype(np.int32)
-#def f2(x, h, w): return ((w/h)*x).astype(np.int32)
-def f1(x, h, w): return x * 0
-def f2(x, h, w): return np.full(len(x), w-1)
 
-#画像中の正面index
-def target_indexs(height, width, target_height=60): 
-	y = np.arange(target_height, height)
-	index1, index2 = f1(y, height, width), f2(y, height, width)
-	indexs_flat = np.array([ y[n]*width+index for n, (i1, i2) in enumerate(zip(index1, index2)) for index in range(i1, i2+1)])
-	indexs_dim = np.array([ [y[n], index] for n, (i1, i2) in enumerate(zip(index1, index2)) for index in range(i1, i2+1)])
-	return indexs_flat, indexs_dim
-	
 #ライン上に機体があるか検出
 def on_line(img, target_bottom):
 	height, width = img.shape
@@ -257,3 +247,49 @@ def iHSV(img, alpha=1):
     RGB_pixels = RGB_pixels.reshape(height, width, 3)*alpha
     RGB_pixels = np.where(RGB_pixels>1.0, 1.0, RGB_pixels)
     return RGB_pixels
+	
+	
+# モーメント特徴量
+@jit
+def morment(img, p, q, target=1):
+    height, width = img.shape
+    
+    m = 0
+    for h in range(height):
+        for w in range(width):
+            m += (img[h][w] == target) * (h ** q) * (w ** p)
+    return m
+	
+# 重心
+def center_grav(img, target=1):
+    m1 = morment(img, 1, 0, target=target)
+    m2 = morment(img, 0, 0, target=target)
+    grab_x=m1/m2
+    
+    m1 = morment(img, 0, 1, target=target)
+    m2 = morment(img, 0, 0, target=target)
+    grab_y=m1/m2
+    
+    return(int(grab_y), int(grab_x))
+	
+# 主軸方向
+def pricipal_axis(img, target=1):
+    
+    A = (morment(img, 2, 0, target=target)-morment(img, 0, 2, target=target))/morment(img, 1, 1, target=target)
+    y1 = (-1*A+np.sqrt(A**2+4))/2
+    y2 = (-1*A-np.sqrt(A**2+4))/2
+    theta1 = np.arctan(y1)
+    theta2 = np.arctan(y2)
+    return np.rad2deg(theta1), np.rad2deg(theta2)
+
+#画像のラインより重心を算出し機体の回転θ度算出
+def grav_degree(img, target=1):
+
+    height, width = img.shape
+    grav_y, grav_x = center_grav(img)
+    
+    theta = np.arctan(np.abs((int(width/2)- grav_x)/(height - grav_y)))
+    if (int(width/2) - grav_x)/(height - grav_y) > 0: theta = -1 * theta
+    degree = int(theta * 180 / np.pi)
+    
+    return degree, [grav_y, grav_x]

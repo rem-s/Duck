@@ -8,11 +8,13 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import *
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph as pg
-import numpy as np
 import sys
 import time
 import datetime
-from cv2 import cvtColor, COLOR_BGR2RGB
+from control.process.image import *
+from PIL import Image
+import numpy as np
+import cv2
 
 class BaseWindow(ABC):
     
@@ -201,7 +203,7 @@ class VoiceWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(10) # call plot update func every 35ms
+        self._timer.start(50) # call plot update func every 35ms
         
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
@@ -239,7 +241,7 @@ class SonicWindow(BaseWindow):
     def __init__(self, tcp):
         self.tcp = tcp
         self.xrange_max = 50
-        self.yrange_max = 100
+        self.yrange_max = 500
         self.prev = 0
         self.sonicDistanceList = np.zeros(self.xrange_max)
         self.setWindowLayout()
@@ -268,14 +270,14 @@ class SonicWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(50) # call plot update func every 100ms
+        self._timer.start(10) # call plot update func every 100ms
     
     def setActionTrig(self):
         pass
     
     def update(self):
-        msg = self.tcp.receive(3)
-        msg = int.from_bytes(msg, byteorder="big", signed=True)-100
+        msg = self.tcp.receive(1024)
+        msg = int.from_bytes(msg, byteorder="big", signed=True)
        
         self.sonicDistanceList = np.append(self.sonicDistanceList, np.array(msg))
         
@@ -299,10 +301,9 @@ class ImageWindow(BaseWindow):
     def __init__(self, tcp):
         self.tcp = tcp
         
-        self.image_height = 60
-        self.image_width = 80
-        self.image_nchannel = 3
-        self.payload_size = self.image_height*self.image_width*self.image_nchannel
+        self.height = int(480/8)
+        self.width = int(640/8)
+        self.channel = 3
         self.data = None
         self.setWindowLayout()
         
@@ -316,31 +317,37 @@ class ImageWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(50) # fps 15
+        self._timer.start(10) # fps 15
         
     def setActionTrig(self):
         pass
     
     def update(self):
-        self.data = b""
-        #self.tcp.setBlockingMode(True)
-        #self.tcp.setTimeout(None)
-        while len(self.data) < self.payload_size:
-            #print("Recv: {}".format(len(data)))
-            self.data += self.tcp.receive(self.payload_size-len(self.data))
-        self.data = np.frombuffer(self.data, dtype='uint8')
-        ### decode image and reshape that into heigt*width*channel ###
+        receivedstr=self.tcp.receive(1024*4) 
+        narray = np.fromstring(receivedstr,dtype='uint8')
+        deimg = cv2.imdecode(narray,1)
+        raw_img = deimg.reshape((self.height, self.width, self.channel))
         
-        #imageBGR = cv2.imdecode(self.data, cv2.IMREAD_COLOR).reshape((self.image_height, self.image_width, self.image_nchannel))
-        
-        self.data = self.data.reshape((self.image_height, self.image_width, self.image_nchannel))
-        self.data = cvtColor(self.data, COLOR_BGR2RGB)
+        #線検知
+        grayFrame = cv2.cvtColor(raw_img, cv2.COLOR_BGR2GRAY)
+        b_img = mean_binarize(grayFrame)
+        l_img = labeling(b_img)
+        r_img = compare_area(l_img)
+        degree, grav = grav_degree(r_img)
+
+        #検出線表示
+        raw_img = raw_img.reshape(self.height*self.width, self.channel)
+        raw_img[np.where(r_img.reshape(-1) == 1)] = [0, 255, 0]
+        raw_img = raw_img.reshape(self.height, self.width, self.channel)
+
+        #重心表示と表示画像生成
+        raw_img[grav[0], grav[1], :] = [0, 0, 255]
+        raw_img = cv2.resize(raw_img, (self.width*2, self.height*2))
+        raw_img = cv2.putText(raw_img, '%d'%(degree), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+
+        self.data = cv2.cvtColor(raw_img, cv2.COLOR_BGR2RGB)
         self.data = self.data.transpose(1, 0, 2)
         
-        #qimage = QtGui.QImage(self.data, self.image_width, self.image_height, self.image_width * 4, QtGui.QImage.Format_ARGB32_Premultiplied)
-        #pixmap = QtGui.QPixmap.fromImage(qimage);
-        
-        #self.image = Image.fromarray(self.data)
         self._widget.setImage(self.data)
         self._widget.getImageItem().dataTransform()
         #print(pixmap, pixmap.shape)
@@ -362,7 +369,7 @@ class AccWindow(BaseWindow):
     def __init__(self, tcp):
         self.tcp = tcp
         self.xrange_max = 50
-        self.yrange_max = 100
+        self.yrange_max = 128
         self.prev = 0
         self.x_accList = np.zeros(self.xrange_max)
         self.y_accList = np.zeros(self.xrange_max)
@@ -393,20 +400,22 @@ class AccWindow(BaseWindow):
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(50) # call plot update func every 60ms
+        self._timer.start(10) # call plot update func every 60ms
         
     def setActionTrig(self):
         pass
     
     def update(self):
-        x_acc = self.tcp.receive(3)
-        x_acc = int.from_bytes(x_acc, byteorder="big", signed=True)-150
+        x_acc = self.tcp.receive(1)
+        x_acc = int.from_bytes(x_acc, byteorder="big", signed=True)
         
-        y_acc = self.tcp.receive(3)
-        y_acc = int.from_bytes(y_acc, byteorder="big", signed=True)-150
+        y_acc = self.tcp.receive(1)
+        y_acc = int.from_bytes(y_acc, byteorder="big", signed=True)
         
-        z_acc = self.tcp.receive(3)
-        z_acc = int.from_bytes(z_acc, byteorder="big", signed=True)-150
+        z_acc = self.tcp.receive(1)
+        z_acc = int.from_bytes(z_acc, byteorder="big", signed=True)
+
+        print(x_acc, y_acc, z_acc)
         
         self.x_accList = np.append(self.x_accList, np.array(x_acc))
         self.y_accList = np.append(self.y_accList, np.array(y_acc))
@@ -452,12 +461,13 @@ class QtMultiWindow(QMainWindow):
         self.setCentralWidget(self.mdi)
         
         ### setting for sensors instance
-        self._voiceWin = VoiceWindow(recorder)
+        #self._voiceWin = VoiceWindow(recorder)
         self._sonicWin = SonicWindow(tcp_sonic)
         self._accWin = AccWindow(tcp_acc)
         self._imageWin = ImageWindow(tcp_image)
         
-        subWindowList = [self._voiceWin, self._sonicWin, self._accWin, self._imageWin]
+        #subWindowList = [self._voiceWin, self._sonicWin, self._accWin, self._imageWin]
+        subWindowList = [self._sonicWin, self._accWin, self._imageWin]
         
         self.setWindowLayout()
         
