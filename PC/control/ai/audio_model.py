@@ -16,7 +16,7 @@ class Model(object):
 #public methods
     def __init__(self):
         self.__model = None
-
+        
     def model_select(self, model):
         self.__model = joblib.load("./control/models/"+Model.__model_dict[model])
 

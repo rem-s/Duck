@@ -9,7 +9,7 @@ class Recorder(object):
 #public methods
     def __init__(self):
         # recording time (unit: s)
-        self.__record_time = 5
+        self.__record_time = 3
         # file name
         self.__output_wavfile = ["record.wav"]
         # index number of microphone
@@ -57,7 +57,7 @@ class Recorder(object):
         for i in range(self.__audio.get_device_count()):
             print(self.__audio.get_device_info_by_index(i))
 
-    def record_voice(self, wfile_list=["record.wav"], dst="./control/audioSample/", overwrite=False) -> list:
+    def record_voice(self, wfile_list=["record.wav"], dst="/control/ai/dataset/speech_samples/", overwrite=False) -> list:
         if dst[-1] != "/":
             print("Destination must be ended with \"/\"")
             raise NotADirectoryError
@@ -86,7 +86,7 @@ class Recorder(object):
                 data = self.__stream.read(self.__chunk) #write raw data in the stream at each chunk
                 self.byte_data.append(data)
             print("Finished recording")
-            #self.__make_wav_file(self.byte_data, dst+w)
+            self.__make_wav_file(self.byte_data, dst+w)
             print("Wav file was generated\n")
         self.__output_wavfile = wfile_list
         self.__close_all()

@@ -1,0 +1,31 @@
+PC
+|
+|___ control
+	|
+	|___ ai
+	|
+	|___ gui
+	|
+	|___ process
+	|
+	|___ sensor
+
+ai
+|
+|___ models
+|	|
+|	|____ robot_manip_dt.pkl
+|	|____ robot_manip_knn.pkl
+|	|____ speaker_reco_kmeans.pkl
+|	|____ speaker_reco_gmms.pkl
+|	|____ speaker_reco_vbgmms.pkl
+|
+|
+|___ dataset
+|	|
+|	|____ mfcc_features.csv
+|	|____ speech_samples
+|		|
+|		|___speech_data.wav (for each speaker)
+|
+|___ speech_model_select.py => speech_recognition-related-models are selected by this file
