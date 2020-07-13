@@ -1,7 +1,6 @@
 import pyaudio #handling recording function
-import wave #handling .wav file
+import wave #handling wav file
 from os import listdir, makedirs
-import numpy as np
 import sys
 
 #beginning of class Recorder
@@ -79,15 +78,16 @@ class Recorder(object):
         )
         write_to_stream_time = int(self.__sampling_rate * self.__record_time / self.__chunk)
         for w in wfile_list:
-            print("Start recording...")
+            print("Start recording... record time: {}s".format(self.__record_time))
             #self.byte_data = [self.__stream.read(self.__chunk) for _ in range(write_to_stream_time)]
             self.byte_data = []
             for i in range(0, write_to_stream_time):
                 data = self.__stream.read(self.__chunk) #write raw data in the stream at each chunk
                 self.byte_data.append(data)
-            print("Finished recording")
+            print("Finished")
+
             self.__make_wav_file(self.byte_data, dst+w)
-            print("Wav file was generated\n")
+            print("{} has been created\n".format(w))
         self.__output_wavfile = wfile_list
         self.__close_all()
         return self.__output_wavfile
@@ -105,6 +105,6 @@ class Recorder(object):
     def __close_all(self):
         self.__stream.close()
         self.__audio.terminate()
-        print("pyaudio was terminated")
+        print("pyaudio has been terminated")
 
 #end of class Recorder

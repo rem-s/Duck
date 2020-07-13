@@ -27,10 +27,10 @@ for w in out_file:
     max_score = -99999
     max_speaker = None
     for i in range(len(models_)):
-        for vi in range(mfcc.shape[1]):
-            score = models_[i].score(mfcc.T[vi].reshape(1, -1))
-            if score > max_score:
-                max_score, max_speaker = score, speakers[i]
+        score = models_[i].score(mfcc.T)
+        print(score)
+        if score > max_score:
+            max_score, max_speaker = score, speakers[i]
     
     predicted_sp = max_speaker
     print("speech: {0}, predicted: {1}".format(w, predicted_sp))
