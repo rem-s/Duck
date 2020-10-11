@@ -1,27 +1,47 @@
-# Duck
-Projekt Duck<br>
-### Duck the Karugamo projekt
+# Duck Project
 
-部員向けにGitコマンドのチートシートを置いておく。(部長の個人的なメモ)
+Duck is a project that make own robots moving just like a duck.
 
-## git cmd ch sh
-### クローンする&ブランチに入る
-`git clone [URL_REPO_REMOTE]`
+- It follows a robot in front of itself.
+- It follows sound comes from a parent robot and move towards that direction.
 
-`cd [NAME_REPO]`
-### チェックアウト
-`git checkout [NAME_BRANCH]`
-### ブランチの新規作成
-`git branch [NAME_BRANCH_NEU]`
-### リモートブランチの削除
-`git push --delete origin [NAME_BRANCH_REMOTE]`
-### ローカルブランチの削除
-`git branch -D [NAME_BRANCH_LOCAL]`
-### すでにGitHub上にあるブランチにチェックアウトする
-`git checkout -b [NAME_BRANCH_LOCAL] origin/[NAME_BRANCH_REMOTE]`
-### ブランチ名の変更
-`git branch -m [NAME_BRANCH_OLD] [NAME_BRANCH_NEU]`
+## Description
 
-`リモートの[NAME_BRANCH_OLD]を削除`
+In this project, we have made components of duck by ourself.
 
-`[NAME_BRANCH_NEU]をプッシュ`
+Hardware level
+
+- Wireless-controller
+- Circuit design
+- 3D model
+- Sensor control
+  
+Software level
+
+- GUI
+- image recognition
+- voice recognition
+
+## Demo
+
+This is a tracking demo
+
+![tracking_demo](https://user-images.githubusercontent.com/47913469/92476878-9ae51f80-f21a-11ea-8046-ca05b53445c4.gif)
+
+## Requirement
+
+- python 3.6
+- tensorflow 1.40
+- pyqt
+
+## Usage
+
+python main.py
+
+## Contribution
+
+## Licence
+
+## Author
+
+REMs[https://github.com/rem-s/Duck]
