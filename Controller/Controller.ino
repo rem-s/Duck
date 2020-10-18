@@ -104,7 +104,7 @@ void setup() {
   init_wifi();
   //init_bt();
   choose_mode_network();
-  init_tcp(8889, "192.168.0.83"); // (port, address)
+  init_tcp(); // (port, address)
   //tft.setRotation(3);
   //delay(5000);
   //tft.fillScreen(tft.color565(255, 64, 0));

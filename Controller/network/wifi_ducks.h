@@ -68,8 +68,8 @@ void init_wifi(void) {
 }
 
 void choose_mode_network() {
-  tft.fillScreen(tft.color565(255, 255, 255));
-  tft.setTextColor(tft.color565(255, 64, 0));
+  tft.fillScreen(tft.color565(0,0,0));
+  tft.setTextColor(tft.color565(255,255, 0));
   tft.setCursor(0, 0);
   tft.setTextSize(5);
   tft.println("Duck");

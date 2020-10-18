@@ -27,31 +27,29 @@ extern int MODE_NETWORK_CLIENT;
 extern WiFiClient client;
 extern WiFiServer server;  //Port番号
 
-static int port_udp_remote = 0; // UDP port, remotes.
-static char* addr_ip_remote = "0.0.0.0"; //IP address, remotes.
+extern const int port_tcp_remote;
+extern const char* addr_ip_remote;
 
 //static WiFiUDP wifiUdp;
 
-void init_tcp(int port, char* addr) {
+void init_tcp() {
     Serial.println("FUNCTION    > INIT_TCP");
     int count_retry = 0;
     char str[50];
     Serial.println("INIT SRVC   > TCP");
     if(MODE_NETWORK_CLIENT){
         Serial.println("START SRVC  > TCP SUCCESS");
-        port_udp_remote = port;
-        addr_ip_remote = addr;
         disp_string("RM ADDR: ");
         sprintf(str,"%s",addr_ip_remote);
         disp_stringln(str);
         disp_string("RM PORT: ");
-        sprintf(str,"%d",port_udp_remote);
+        sprintf(str,"%d",port_tcp_remote);
         disp_stringln(str);
         disp_string("Try: ");
         for(count_retry = 0 ; count_retry <= 5 ; count_retry++){
           disp_string("* ");
           //if()
-            if(client.connect(addr_ip_remote, port_udp_remote)){
+            if(client.connect(addr_ip_remote, port_tcp_remote)){
                 Serial.println("START SRVC  > TCP CL SUCCESS");
                 Serial.println("TASK STATUS > DONE SUCCESS");
                 disp_stringln(" ");
@@ -73,6 +71,6 @@ void send_tcp(char* content_send) {
     Serial.println("FUNCTION    > SEND_TCP");
     Serial.print("SEND CHAR   > ");
     Serial.println(content_send);
-    
+    client.print(content_send);
     Serial.println("TASK STATUS > DONE SUCCESS");
 }

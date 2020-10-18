@@ -39,13 +39,15 @@ int canaflag = 0;
 void disp_nw() {
   int FLAG_NETWORK_FAIL = 1;
   tft.setCursor(2, 66);
-  tft.setTextColor(ST77XX_BLUE);
+  tft.setTextColor(ST77XX_GREEN);
   tft.setTextSize(1);
   tft.print("SSID: ");
   tft.println(SSID_WIFIS);
-  if(FLAG_NETWORK_FAIL == 1){
-  tft.setCursor(2, 74);
-  tft.print("NETWORK FAILEN");
+  if (FLAG_NETWORK_FAIL == 1) {
+    tft.setCursor(2, 74);
+    tft.setTextColor(ST77XX_RED);
+    tft.print("NETWORK FAILEN");
+    tft.setTextColor(ST77XX_GREEN);
   }
 }
 
@@ -72,37 +74,37 @@ void disp_direc(int direc_neu) {
   if (direc_neu != direc_old) {			// erase old direction
     switch (direc_old) {
       case 1:
-        tft.fillTriangle(36, 23, 42, 23, 39, 5, ST77XX_WHITE);
+        tft.fillTriangle(36, 23, 42, 23, 39, 5, ST77XX_BLACK);
         //        tft.println("   |");
         //        tft.println("");
         //        tft.println("");
         break;
       case 2:
-        tft.fillTriangle(34, 25, 31, 28, 10, 10, ST77XX_WHITE);
+        tft.fillTriangle(34, 25, 31, 28, 10, 10, ST77XX_BLACK);
         //        tft.println("  \\");
         //        tft.println("");
         //        tft.println("");
         break;
       case 3:
-        tft.fillTriangle(44, 25, 47, 28, 68, 10, ST77XX_WHITE);
+        tft.fillTriangle(44, 25, 47, 28, 68, 10, ST77XX_BLACK);
         //        tft.println("    /");
         //        tft.println("");
         //        tft.println("");
         break;
       case 4:
-        tft.fillTriangle(36, 40, 42, 40, 39, 58, ST77XX_WHITE);
+        tft.fillTriangle(36, 40, 42, 40, 39, 58, ST77XX_BLACK);
         //        tft.println("");
         //        tft.println("");
         //        tft.println("   |");
         break;
       case 5:
-        tft.fillTriangle(31, 35, 34, 38, 10, 53, ST77XX_WHITE);
+        tft.fillTriangle(31, 35, 34, 38, 10, 53, ST77XX_BLACK);
         //        tft.println("");
         //        tft.println("");
         //       tft.println("  /");
         break;
       case 6:
-        tft.fillTriangle(44, 38, 47, 35, 68, 53, ST77XX_WHITE);
+        tft.fillTriangle(44, 38, 47, 35, 68, 53, ST77XX_BLACK);
         //        tft.println("");
         //        tft.println("");
         //        tft.println("    \\");
@@ -357,16 +359,16 @@ int tariatoi(char a) {
 }
 
 void reset_screen() {
-  tft.fillScreen(tft.color565(255, 255, 255));
+  tft.fillScreen(tft.color565(0, 0, 0));
 }
 
 void screen_format() {
   //x1,y1,x2,y2
   // tft.drawLine(0, 64, 159, 64, tft.color565(0, 0, 0));
   //tft.drawLine(79, 0, 79, 64, tft.color565(0, 0, 0));
-  tft.drawLine(0, 64, 159, 64, tft.color565(0, 0, 0));
-  tft.drawFastHLine(0, 64, 160, tft.color565(0, 0, 0));
-  tft.drawFastVLine(79, 0, 64, tft.color565(0, 0, 0));
+  tft.drawLine(0, 64, 159, 64, tft.color565(255, 255, 255));
+  tft.drawFastHLine(0, 64, 160, tft.color565(255, 255, 255));
+  tft.drawFastVLine(79, 0, 64, tft.color565(255, 255, 255));
   tft.drawFastHLine(80, 0, 80, tft.color565(0, 0, 0));
   tft.drawFastHLine(80, 1, 80, tft.color565(0, 0, 0));
   tft.drawFastHLine(80, 62, 80, tft.color565(0, 0, 0));
