@@ -52,9 +52,6 @@
 //#include "control/sensor/gyro.h"
 #include "lcd_init.h"
 #include "lcd.h"
-//#include "ducktone.h"
-//#include "manabino_tonelib.h"
-
 
 extern void disp_string(char*);
 extern void disp_stringln(char*);
@@ -67,6 +64,12 @@ int flag_button0 = 0;
 int flag_button1 = 0;
 TaskHandle_t th[2];
 int MODE_NETWORK_CLIENT = 3;
+
+/*
+   void setup(void)
+
+   This is for initialize modules and setup some parameter.
+*/
 
 void setup() {
   // put your setup code here, to run once:
@@ -116,6 +119,11 @@ void setup() {
 }
 
 /*
+   void loop(void)
+
+   This is main program.
+
+   ↓ direction / command
 
    FRONT
    213
@@ -148,6 +156,12 @@ void loop() {
   delay(20);
 }
 
+/*
+   void ensure(void)
+
+   This is for ensure connection.
+*/
+
 /*void ensure(){
   client.readStringUntil('\r');
   }
@@ -155,7 +169,9 @@ void loop() {
 */
 
 /*
-  KONAMI COMMAND
+   void cmd_history(int)
+
+   KONAMI COMMAND
 */
 
 void cmd_history(int cmd) {
