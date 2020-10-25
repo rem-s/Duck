@@ -53,6 +53,7 @@
 #include "lcd_init.h"
 #include "lcd.h"
 
+
 extern void disp_string(char*);
 extern void disp_stringln(char*);
 extern void disp_staff(void);
@@ -70,6 +71,8 @@ int MODE_NETWORK_CLIENT = 3;
 
    This is for initialize modules and setup some parameter.
 */
+//canary: add BMX055 feature
+#include "control/sensor/gyro.h"
 
 void setup() {
   // put your setup code here, to run once:

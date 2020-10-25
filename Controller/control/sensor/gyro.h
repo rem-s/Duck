@@ -1,3 +1,4 @@
+
 /*
    gyro.h
    shinchokuer: tari
@@ -36,3 +37,4 @@ void init_BMX(byte addr, byte reg, byte value) {
 def HKato{
 
 }
+
