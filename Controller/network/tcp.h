@@ -72,5 +72,6 @@ void send_tcp(char* content_send) {
     Serial.print("SEND CHAR   > ");
     Serial.println(content_send);
     client.print(content_send);
+    //client.readStringUntil('\r');
     Serial.println("TASK STATUS > DONE SUCCESS");
 }

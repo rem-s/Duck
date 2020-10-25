@@ -37,7 +37,7 @@ int canaflag = 0;
 */
 
 void disp_nw() {
-  int FLAG_NETWORK_FAIL = 1;
+  int FLAG_NETWORK_FAIL = 0;
   tft.setCursor(2, 66);
   tft.setTextColor(ST77XX_GREEN);
   tft.setTextSize(1);

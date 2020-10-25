@@ -62,7 +62,7 @@ void main_stick(){
 
   else {
     if (get_value_stick_x() > 1024) {
-      send_tcp("7");
+      send_tcp("HKato");
       disp_direc(7);
       cmd_history(7);
     }

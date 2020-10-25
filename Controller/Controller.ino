@@ -133,6 +133,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  if(!client.connect(addr_ip_remote, port_tcp_remote)){
+    FLAG_CONNECT_FAIL = 1;
+  }
   void ensure();
   static String sendval;
   if (get_status_button(0) == 1 && flag_button0 == 0) {
