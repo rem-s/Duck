@@ -12,6 +12,7 @@
 #include <WiFi.h>
 
 extern void disp_string(char*);
+extern void disp_stringln(char*);
 
 static int port_udp_remote = 0; // UDP port, remotes.
 static char* addr_ip_remote = "0.0.0.0"; //IP address, remotes.
@@ -24,9 +25,9 @@ char str[50];
   port_udp_remote = port;
   addr_ip_remote = addr;
   wifiUdp.begin(port_udp_remote);
-    disp_string("Remote IP address: ");
-    sprintf(str,"%d",addr_ip_remote);
-    disp_string(str);
+    disp_string("Rem IP addr: ");
+    sprintf(str,"%s",addr_ip_remote);
+    disp_stringln(str);
     disp_string("UDP port: ");
     sprintf(str,"%d",port_udp_remote);
     disp_string(str);
@@ -34,12 +35,12 @@ char str[50];
 }
 
 void send_udp(int content_send) {
-  Serial.println("I will send a character to the client, it is");
-  Serial.println("----------");
-  Serial.println(content_send);
-  Serial.println("----------");
+  //Serial.println("I will send a character to the client, it is");
+  //Serial.println("----------");
+  //Serial.println(content_send);
+  //Serial.println("----------");
   wifiUdp.beginPacket(addr_ip_remote, port_udp_remote);
   wifiUdp.write(content_send);
   wifiUdp.endPacket();
-  Serial.println("I sent that.");
+  //Serial.println("I sent that.");
 }

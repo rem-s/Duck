@@ -7,42 +7,44 @@ static int NUM_PORT_BUTTON_TWO = 0;
 static int NUM_PORT_BUTTON_THREE = 0;
 
 void init_button(int button, int pin){
-    
+    Serial.println("FUNCTION    > INIT_BUTTON");
     switch (button) {
         case 0:
             NUM_PORT_BUTTON_ZERO = pin;
             pinMode(NUM_PORT_BUTTON_ZERO, INPUT_PULLDOWN);
-            Serial.print(NUM_PORT_BUTTON_ZERO);
-            Serial.println(" is my digital pin number, connected button zero. True.");
+            Serial.print("INFORMATION > ZERO BUTTON PORT IS: ");
+            Serial.println(NUM_PORT_BUTTON_ZERO);
             break;
             
         case 1:
             NUM_PORT_BUTTON_ONE = pin;
             pinMode(NUM_PORT_BUTTON_ONE, INPUT_PULLDOWN);
-            Serial.print(NUM_PORT_BUTTON_ONE);
-            Serial.println(" is my digital pin number, connected button one. True.");
+            Serial.print("INFORMATION > ONE BUTTON PORT IS: ");
+            Serial.println(NUM_PORT_BUTTON_ONE);
             break;
             
         case 2:
             NUM_PORT_BUTTON_TWO = pin;
             pinMode(NUM_PORT_BUTTON_TWO, INPUT_PULLDOWN);
-            Serial.print(NUM_PORT_BUTTON_TWO);
-            Serial.println(" is my digital pin number, connected button two. True.");
+            Serial.print("INFORMATION > TWO BUTTON PORT IS: ");
+            Serial.println(NUM_PORT_BUTTON_TWO);
             break;
             
         case 3:
             NUM_PORT_BUTTON_THREE = pin;
             pinMode(NUM_PORT_BUTTON_THREE, INPUT_PULLDOWN);
-            Serial.print(NUM_PORT_BUTTON_THREE);
-            Serial.println(" is my digital pin number, connected button three. True.");
+            Serial.print("INFORMATION > THREE BUTTON PORT IS: ");
+            Serial.println(NUM_PORT_BUTTON_THREE);
             break;
 
         default:
             break;
     }
+    Serial.println("TASK STATUS > DONE SUCCESS");
 }
 
 int get_status_button(int port){
+    Serial.println("FUNCTION    > GET_STATUS_BUTTON");
     int value_return;
     switch (port) {
         case 0:
@@ -60,5 +62,6 @@ int get_status_button(int port){
         default:
             break;
     }
+    Serial.println("TASK STATUS > DONE SUCCESS");
 	return value_return;
 }
