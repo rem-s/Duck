@@ -168,32 +168,43 @@ void disp_direc(int direc_neu) {
   direc_old = direc_neu;
 }
 
+
 /*
    void disp_string(char*)
 
    This is for displaying string to LCD "WITHOUT" newline
    at the end of output.
+
+   char* cont : string to display
 */
 
 void disp_string(char* cont) {
   tft.print(cont);
 }
 
+
 /*
    void disp_stringln(char*)
 
    This is for displaying string to LCD "WITH" newline
    at the end of output.
+
+   char* cont : string to display
+   No return.
 */
 
 void disp_stringln(char* cont) {
   tft.println(cont);
 }
 
+
 /*
    void disp_staff()
 
    This is for displaying staff credit.
+
+   No arguments.
+   No return.
 */
 
 void disp_staff() {
@@ -241,6 +252,16 @@ void disp_staff() {
   }
   //disp_staff_flash();
 }
+
+
+/*
+   void disp_staff()
+
+   This is for displaying staff credit.
+
+   No arguments.
+   No return.
+*/
 
 void disp_staff_flash(void *pvParameters) {
   static int x1, x2, y1, y2, c, c2;
@@ -296,6 +317,10 @@ void disp_staff_flash(void *pvParameters) {
    void disp_image(char*)
 
    This is for displaying image array
+   
+   void *pvparameters : argument for FreeRTOS
+   No return.
+   
 */
 
 //char line[128][160];
