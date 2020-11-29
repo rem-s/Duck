@@ -17,6 +17,7 @@ import time
 import datetime
 #from PIL import Image
 from cv2 import cvtColor, COLOR_BGR2RGB
+import random
 
 class BaseWindow(ABC):
     
@@ -48,7 +49,7 @@ class BaseWindow(ABC):
 
 class VoiceRecorder(object):
     
-    def __init__(self, wfile="record.wav", dst="./", overwrite=False):
+    def __init__(self, record_time, nchannels, sr=16000, wfile="record.wav", dst="./", overwrite=False, idevice=1):
         # dst must be ended with "/"
         if dst[-1] != "/":
             print("Destination must be ended with \"/\"")
@@ -61,15 +62,15 @@ class VoiceRecorder(object):
             raise FileExistsError
         
         # recording time (unit: s)
-        self.__record_time = 5
+        self.__record_time = record_time
         # file name
         self.__output_wavfile = wfile
         # index number of microphone
-        self.__idevice = 1
+        self.__idevice = idevice
         # format of audio
         self.__format = pyaudio.paInt16
         # monaural
-        self.__nchannels = 1
+        self.__nchannels = nchannels
         # sampling rate,which is usually 16KHz In terms of raspberryPi, you need 44.1kHz instread
         self.__sampling_rate = 44100 #8192*2
         # number of frame to extract at a time,that is called chunk,
@@ -119,7 +120,7 @@ class VoiceRecorder(object):
         return (None, pyaudio.paContinue)
     
     def setDeviceIndex(self, device_index):
-        self.input_device_index = device_index
+        self.__idevice = device_index
     
     def getDeviceIndex(self):
         audio_device_dict = {}
@@ -171,6 +172,7 @@ class VoiceRecorder(object):
 class VoiceWindow(BaseWindow):
     
     def __init__(self, recorder):
+        super().__init__()
         self._recorder = recorder
         self.chunk = self._recorder.getChunk()
         self.plot_data = np.zeros(self.chunk*2)
@@ -237,7 +239,74 @@ class VoiceWindow(BaseWindow):
         self._timer.stop()
         #self._stop_timer.stop()
         #self._recorder.closeAll()
+
+class MultiChannelMicWindow(BaseWindow):
+    
+    def __init__(self, recorder):
+        super().__init__()
+        self._recorder = recorder
+        self.setWindowLayout()
+    
+    def setWindowLayout(self):
+        self._window = QMdiSubWindow()
+        self._window.setWindowTitle("SoundSourceDirection")
+        self._window.setWidget(pg.GraphicsLayoutWidget(show=False))
+        self._widget = self._window.widget().addPlot(row=0, col=0)
+        #pg.PlotItem(pg.BarGraphItem(x=range(5), height=[1,5,2,4,3], width=0.5)
+        ### Background colors ###
+        #blue  b
+        #green g
+        #red   r
+        #cyan (bright blue-green) c
+        #magenta (bright pink)    m
+        #yellow y
+        #black  k
+        #white  w
+        #########################
+        #self._widget.setBackground('b')
+        self.dir = np.zeros(500)
+        self.x = np.sin(np.linspace(0, 2*np.pi, 500))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
+        self.y = np.cos(np.linspace(0, 2*np.pi, 500))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
+        self.x_resolution = np.cos(np.linspace(0, 2*np.pi, 500) * 360)
+        self.y_resolution = self.x_resolution
+        #self._widget.setTitle("SoundSourceDirection", color="r", italic=True)
+        self._widget.setXRange(-1, 1)
+        self._widget.setYRange(-1, 1)
+        #self._widget.showGrid(x=True, y=True)
         
+    def setTimer(self):
+        self._timer = QtCore.QTimer()
+        self._timer.timeout.connect(self.update)
+        self._timer.start(1000) # call plot update func every 35ms
+        
+        self._stop_timer = QtCore.QTimer()
+        self._stop_timer.timeout.connect(self.closeWindow)
+        print("record start recording sec: ", self._recorder.getRecordTime())
+        #self._stop_timer.start(1000*self._recorder.getRecordTime()) # plot stops when record time passes
+    
+    def setActionTrig(self, action):
+        pass
+    
+    def update(self):
+
+        x = self.x * (0.5 + self.dir * self.x_resolution)
+        y = self.y * (0.5 + self.dir * self.y_resolution)
+        
+        self._widget.clear()
+        self._widget.plot(x=x, y=y)
+        
+    def getWindow(self):
+        return self._window
+    
+    def getWidget(self):
+        return self._widget
+    
+    def closeWindow(self):
+        #stop Qtimer threads
+        self._timer.stop()
+        self._stop_timer.stop()
+        self._recorder.closeAll()
+
 class SonicWindow(BaseWindow):
     
     def __init__(self, tcp):
@@ -320,8 +389,8 @@ class ImageWindow(BaseWindow):
     def __init__(self, tcp):
         self.tcp = tcp
         
-        self.image_height = 60
-        self.image_width = 80
+        self.image_height = 600
+        self.image_width = 800
         self.image_nchannel = 3
         self.payload_size = self.image_height*self.image_width*self.image_nchannel
         self.data = None
@@ -331,13 +400,13 @@ class ImageWindow(BaseWindow):
         self._window = QMdiSubWindow()
         self._window.setWindowTitle("CameraImage")
         #image widget
-        self._window.setWidget(pg.ImageView())
+        self._window.setWidget(pg.ImageView())#pg.ImageView(view=pg.PlotItem()))
         self._widget = self._window.widget()
     
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(200) # fps 15
+        self._timer.start(100) # fps 15
         
     def setActionTrig(self):
         pass
@@ -362,6 +431,7 @@ class ImageWindow(BaseWindow):
         #pixmap = QtGui.QPixmap.fromImage(qimage);
         
         #self.image = Image.fromarray(self.data)
+        #self._widget.image(self.data)
         self._widget.setImage(self.data)
         self._widget.getImageItem().dataTransform()
         #print(pixmap, pixmap.shape)
@@ -464,7 +534,7 @@ def DebugTrig():
     
 class QtMultiWindow(QMainWindow):
     
-    def __init__(self, tcp_sonic, tcp_acc, tcp_image, recorder):#windowList=[voiceWin=None, imageWin=None, sensorWin=None]):
+    def __init__(self, recorder=[], mc_recorder=[], tcp_sonic=None, tcp_acc=None, tcp_image=None):#windowList=[voiceWin=None, imageWin=None, sensorWin=None]):
         
         super().__init__()
         self.mdi = QMdiArea()
@@ -472,18 +542,30 @@ class QtMultiWindow(QMainWindow):
         #self.mdi.subWindowActivated.connect(self.setTimers)
         self.setCentralWidget(self.mdi)
         
+        self.subWindowList = []
         ### setting for sensors instance
-        self._voiceWin = VoiceWindow(recorder)
-        self._sonicWin = SonicWindow(tcp_sonic)
-        self._accWin = AccWindow(tcp_acc)
-        self._imageWin = ImageWindow(tcp_image)
-        
-        subWindowList = [self._voiceWin, self._sonicWin, self._accWin, self._imageWin]
+        if tcp_sonic:
+            self._sonicWin = SonicWindow(tcp_sonic)
+            self.subWindowList.append(self._sonicWin)
+        if tcp_acc:
+            self._accWin = AccWindow(tcp_acc)
+            self.subWindowList.append(self._accWin)
+        if tcp_image:
+            self._imageWin = ImageWindow(tcp_image)
+            self.subWindowList.append(self._imageWin)
+        if recorder is not []:
+            for rec in recorder:
+                self.subWindowList.append(VoiceWindow(rec))
+                #subWindowList.append(self._voiceWin)
+        if mc_recorder is not []:
+            for rec in mc_recorder:
+                self.subWindowList.append(MultiChannelMicWindow(rec))
+            #subWindowList.append(self._micWin)
         
         self.setWindowLayout()
         
         # addSubwindow to mdi system
-        for subwin in subWindowList:
+        for subwin in self.subWindowList:
             if subwin is not None:
                 self.mdi.addSubWindow(subwin.getWindow())
                 subwin.getWidget().show()
@@ -561,6 +643,7 @@ class QtMultiWindow(QMainWindow):
     
 #end of class VoicePlotWindow
 if __name__=="__main__":
+    
     from PyQt5.QtGui import QApplication
     from tcp_server import TCP
     
@@ -568,15 +651,19 @@ if __name__=="__main__":
     if app is None:
         app = QApplication([])
     
-    server_ip = "192.168.0.70"
-    tcp_for_sonic = TCP(server_ip, 8887, server_flag=True)
-    tcp_for_acc = TCP(server_ip, 8888, server_flag=True)
-    tcp_for_image = TCP(server_ip, 8889, server_flag=True)
-    
-    recorder = VoiceRecorder()
-    recorder.setDeviceIndex(1)
-    
-    win = QtMultiWindow(tcp_for_sonic, tcp_for_acc, tcp_for_image, recorder)
+    server_ip = "192.168.0.192"
+    # tcp_for_sonic = TCP(server_ip, 8887, server_flag=True)
+    # tcp_for_acc = TCP(server_ip, 8888, server_flag=True)
+    # tcpi = TCP(server_ip, 8889, server_flag=True)
+    # recorder = VoiceRecorder(record_time=5)
+    # recorder.setDeviceIndex(1)
+
+    rec1 = VoiceRecorder(record_time=5, nchannels=2, idevice=2) # nchannel=2 per port port numbers are 1,2
+    rec1.getDeviceIndex()
+    #rec2 = VoiceRecorder(record_time=5, nchannels=2, idevice=3) # nchannel=2 per port port numbers are 1,2
+    # #recorder.getDeviceIndex()
+    win = QtMultiWindow(mc_recorder=[rec1]) 
+    #win = QtMultiWindow(tcp_image=tcpi)#tcp_for_sonic, tcp_for_acc, tcp_for_image, recorder)
     
     win.show()
     #print(win.get_device_info())
