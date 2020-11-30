@@ -245,12 +245,14 @@ class MultiChannelMicWindow(BaseWindow):
     def __init__(self, recorder):
         super().__init__()
         self._recorder = recorder
+        self.xrange_max = 180
+        self.yrange_max = 512
         self.setWindowLayout()
     
     def setWindowLayout(self):
         self._window = QMdiSubWindow()
         self._window.setWindowTitle("SoundSourceDirection")
-        self._window.setWidget(pg.GraphicsLayoutWidget(show=False))
+        self._window.setWidget(pg.GraphicsLayoutWidget())
         self._widget = self._window.widget().addPlot(row=0, col=0)
         #pg.PlotItem(pg.BarGraphItem(x=range(5), height=[1,5,2,4,3], width=0.5)
         ### Background colors ###
@@ -264,36 +266,50 @@ class MultiChannelMicWindow(BaseWindow):
         #white  w
         #########################
         #self._widget.setBackground('b')
-        self.dir = np.zeros(500)
-        self.x = np.sin(np.linspace(0, 2*np.pi, 500))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
-        self.y = np.cos(np.linspace(0, 2*np.pi, 500))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
-        self.x_resolution = np.cos(np.linspace(0, 2*np.pi, 500) * 360)
-        self.y_resolution = self.x_resolution
-        #self._widget.setTitle("SoundSourceDirection", color="r", italic=True)
-        self._widget.setXRange(-1, 1)
-        self._widget.setYRange(-1, 1)
+        self.index = 16
+        # self.bin = self.xrange_max // self.index
+        self.dir = np.zeros(self.index)
+        # self.x = np.sin(np.linspace(0, 2*np.pi, self.mrange))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
+        # self.y = np.cos(np.linspace(0, 2*np.pi, self.mrange))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
+        # self.x_resolution = np.cos(np.linspace(0, 2*np.pi, self.mrange) * 8)
+        # self.y_resolution = self.x_resolution
+        # self._widget.setTitle("SoundSourceDirection", color="r", italic=True)
+        self._widget.setXRange(-self.index, self.index)#(-180, 180)
+        self._widget.setYRange(0, self.yrange_max)
         #self._widget.showGrid(x=True, y=True)
         
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(1000) # call plot update func every 35ms
+        self._timer.start(100) # call plot update func every 35ms
         
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
-        print("record start recording sec: ", self._recorder.getRecordTime())
-        #self._stop_timer.start(1000*self._recorder.getRecordTime()) # plot stops when record time passes
-    
+        #self._stop_timer.start(1000) # plot stops when record time passes
+
     def setActionTrig(self, action):
         pass
     
     def update(self):
 
-        x = self.x * (0.5 + self.dir * self.x_resolution)
-        y = self.y * (0.5 + self.dir * self.y_resolution)
-        
+        ## make x-values
+        #loc = np.random.randint(-100, )
+        #x = np.random.normal(loc=90, scale=2.0, size=360)
+        #index = random.choice(range(self.index))
+        index = dir // self.index + 1
+        self.dir[index] = (self.dir[index] + 1) % self.yrange_max
+        ## Now draw all points as a nicely-spaced scatter plot
+        #y = pg.pseudoScatter(vals, spacing=0.15)
+        #plt2.plot(vals, y, pen=None, symbol='o', symbolSize=5)
+        #self._widget.getAxis(name='left').setScale(scale=self.bin)
         self._widget.clear()
-        self._widget.plot(x=x, y=y)
+
+        self._widget.plot(range(self.index), self.dir, symbol='o', symbolSize=10, symbolPen=(255,255,255,200), symbolBrush=(0,0,255,150))
+        # rnd = random.randint(1, 360)
+        # self.dir[rnd] = (self.dir[rnd]+1)
+        # x = self.x * (1 + self.dir * self.x_resolution)
+        # y = self.y * (1 + self.dir * self.y_resolution)
+        # self._widget.plot(x=x, y=y)
         
     def getWindow(self):
         return self._window
@@ -651,7 +667,7 @@ if __name__=="__main__":
     if app is None:
         app = QApplication([])
     
-    server_ip = "192.168.0.192"
+    server_ip = "192.168.0.174"
     # tcp_for_sonic = TCP(server_ip, 8887, server_flag=True)
     # tcp_for_acc = TCP(server_ip, 8888, server_flag=True)
     # tcpi = TCP(server_ip, 8889, server_flag=True)
@@ -662,7 +678,8 @@ if __name__=="__main__":
     rec1.getDeviceIndex()
     #rec2 = VoiceRecorder(record_time=5, nchannels=2, idevice=3) # nchannel=2 per port port numbers are 1,2
     # #recorder.getDeviceIndex()
-    win = QtMultiWindow(mc_recorder=[rec1]) 
+    win = QtMultiWindow(mc_recorder=[rec1])
+    win.resize(800, 350)
     #win = QtMultiWindow(tcp_image=tcpi)#tcp_for_sonic, tcp_for_acc, tcp_for_image, recorder)
     
     win.show()
