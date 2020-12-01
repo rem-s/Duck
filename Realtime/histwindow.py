@@ -18,9 +18,6 @@ import datetime
 #from PIL import Image
 from cv2 import cvtColor, COLOR_BGR2RGB
 import random
-import math
-from collections import deque
-random.seed(0)
 
 class BaseWindow(ABC):
     
@@ -248,29 +245,16 @@ class MultiChannelMicWindow(BaseWindow):
     def __init__(self, recorder):
         super().__init__()
         self._recorder = recorder
-
-        self.theta_max = 16 # direction-axis on positive coordinate
-        self.nbins = 4 # number of bins to get orientation resolution
-        self.direction = np.zeros(self.theta_max*2)
-
-        self.radius = 10 # y-axis max
-        self.r_width = self.radius // 10 # 10 of sub-radius
-        
-        self.Q = deque()
-        self.x_list = []
-        self.y_list = []
-        self.n_update = 0
-
+        self.xrange_max = 180
+        self.yrange_max = 10
         self.setWindowLayout()
     
     def setWindowLayout(self):
         self._window = QMdiSubWindow()
         self._window.setWindowTitle("SoundSourceDirection")
         self._window.setWidget(pg.GraphicsLayoutWidget())
-        self._widget = self._window.widget().addPlot()
-        #self._widget.setBackground('g')
-        self._widget.setTitle("Sound Localization", color="w", italic=False)
-        #self._widget.addItem(pg.BarGraphItem(x=range(5), height=[1,5,2,4,3], width=0.5))
+        self._widget = self._window.widget().addPlot(row=0, col=0)
+        #pg.PlotItem(pg.BarGraphItem(x=range(5), height=[1,5,2,4,3], width=0.5)
         ### Background colors ###
         #blue  b
         #green g
@@ -281,68 +265,53 @@ class MultiChannelMicWindow(BaseWindow):
         #black  k
         #white  w
         #########################
-        
-        #self.dir = np.zeros((self.xrange_max, self.radius)) # make (Direction, Magnitude)
-        self._widget.setXRange(-self.theta_max, self.theta_max)#(-180, 180)
-        self._widget.setYRange(1, self.radius) # yrange_max = radius
-        # self.index = 16
-        # self.dir = np.zeros(self.index)
-        # self.r = self.yrange_max
-        # self.circle_x = np.sqrt(self.r**2)
-        # self.circle_y = None
-        #self._widget.setXRange(-self.index, self.index)#(-180, 180)
-        #self._widget.setYRange(0, self.yrange_max)
+        #self._widget.setBackground('b')
+        self.index = 16
+        # self.bin = self.xrange_max // self.index
+        self.dir = np.zeros(self.index)
+        # self.x = np.sin(np.linspace(0, 2*np.pi, self.mrange))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
+        # self.y = np.cos(np.linspace(0, 2*np.pi, self.mrange))# * (0.2 * np.cos(np.linspace(0, 2*np.pi, 1000) * 32))
+        # self.x_resolution = np.cos(np.linspace(0, 2*np.pi, self.mrange) * 8)
+        # self.y_resolution = self.x_resolution
+        # self._widget.setTitle("SoundSourceDirection", color="r", italic=True)
+        self._widget.setXRange(-self.index, self.index)#(-180, 180)
+        self._widget.setYRange(0, self.yrange_max)
         #self._widget.showGrid(x=True, y=True)
         
     def setTimer(self):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.update)
-        self._timer.start(10) # call plot update func every 35ms
+        self._timer.start(100) # call plot update func every 35ms
         
         self._stop_timer = QtCore.QTimer()
         self._stop_timer.timeout.connect(self.closeWindow)
         #self._stop_timer.start(1000) # plot stops when record time passes
-    
+
     def setActionTrig(self, action):
         pass
     
     def update(self):
 
-        # make polar data
-        all_direction = len(self.direction)
-        theta = random.randint(0, all_direction-1) #// self.nbins
-
-        #self.direction[theta] = min(self.direction[theta]+1, self.radius)
-        # update Queue
-        if self.n_update < 256:
-            self.Q.append(theta) # append right
-            self.n_update = self.n_update + 1
-        else:
-            self.direction[self.Q.popleft()] -= 1 # remove old
-            self.Q.append(theta) # append right
-        
-        self.direction[theta] = min(self.direction[theta]+1, self.radius)
-        
+        ## make x-values
+        #loc = np.random.randint(-100, )
+        #x = np.random.normal(loc=90, scale=2.0, size=360)
+        #index = random.choice(range(self.index))
+        dir = random.randint(0, self.xrange_max-1)
+        index = dir // self.index + 1
+        self.dir[index] = (self.dir[index] + 1) % self.yrange_max
+        ## Now draw all points as a nicely-spaced scatter plot
+        #y = pg.pseudoScatter(vals, spacing=0.15)
+        #plt2.plot(vals, y, pen=None, symbol='o', symbolSize=5)
+        #self._widget.getAxis(name='left').setScale(scale=self.bin)
         self._widget.clear()
-        for r in range(0, self.radius+1, self.r_width):
-            x = r * np.cos(np.linspace(0, 2*np.pi, 100))
-            y = r * np.sin(np.linspace(0, 2*np.pi, 100))
-            self._widget.plot(x, y, pen=pg.mkColor('c'))
-        
-        self.x_list = []
-        self.y_list = []
-        for theta in self.Q:
-            # Transform to cartesian and plot
-            x = self.direction[theta] * math.cos(theta)
-            y = self.direction[theta] * math.sin(theta)
-            self.x_list.append(int(x))
-            self.y_list.append(int(y))
-        
-        #self.y_list = pg.pseudoScatter(self.x_list, spacing=0.15)
-        self._widget.plot(self.x_list, self.y_list, symbol='o', symbolSize=10, symbolPen=(255,255,255,200), symbolBrush=(0,0,255,150))
-        
-        #print(len(self.Q))
 
+        self._widget.plot(range(self.index), self.dir, symbol='o', symbolSize=10, symbolPen=(255,255,255,200), symbolBrush=(0,0,255,150))
+        # rnd = random.randint(1, 360)
+        # self.dir[rnd] = (self.dir[rnd]+1)
+        # x = self.x * (1 + self.dir * self.x_resolution)
+        # y = self.y * (1 + self.dir * self.y_resolution)
+        # self._widget.plot(x=x, y=y)
+        
     def getWindow(self):
         return self._window
     
