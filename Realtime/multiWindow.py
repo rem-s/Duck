@@ -249,11 +249,13 @@ class MultiChannelMicWindow(BaseWindow):
         super().__init__()
         self._recorder = recorder
 
-        self.theta_max = 16 # direction-axis on positive coordinate
-        self.nbins = 4 # number of bins to get orientation resolution
+        self.radians = math.pi / 180
+        self.theta_max = 90 # direction-axis on positive coordinate
+        self.nbins = 16  # number of bins to get orientation resolution
         self.direction = np.zeros(self.theta_max*2)
-
-        self.radius = 10 # y-axis max
+        self.resolution = len(self.direction) // self.nbins
+        
+        self.radius = 90 # y-axis max
         self.r_width = self.radius // 10 # 10 of sub-radius
         
         self.Q = deque()
@@ -284,7 +286,7 @@ class MultiChannelMicWindow(BaseWindow):
         
         #self.dir = np.zeros((self.xrange_max, self.radius)) # make (Direction, Magnitude)
         self._widget.setXRange(-self.theta_max, self.theta_max)#(-180, 180)
-        self._widget.setYRange(1, self.radius) # yrange_max = radius
+        self._widget.setYRange(1, self.theta_max) # yrange_max = radius
         # self.index = 16
         # self.dir = np.zeros(self.index)
         # self.r = self.yrange_max
@@ -308,20 +310,22 @@ class MultiChannelMicWindow(BaseWindow):
     
     def update(self):
 
+        dir = None
+        theta = dir
         # make polar data
-        all_direction = len(self.direction)
-        theta = random.randint(0, all_direction-1) #// self.nbins
+        theta = random.randint(0, 180-1) // 10 * 10
+        #print(theta)
 
         #self.direction[theta] = min(self.direction[theta]+1, self.radius)
         # update Queue
-        if self.n_update < 256:
+        if self.n_update < 128:
             self.Q.append(theta) # append right
             self.n_update = self.n_update + 1
         else:
             self.direction[self.Q.popleft()] -= 1 # remove old
             self.Q.append(theta) # append right
         
-        self.direction[theta] = min(self.direction[theta]+1, self.radius)
+        self.direction[theta] = min(self.direction[theta]+1, 10)
         
         self._widget.clear()
         for r in range(0, self.radius+1, self.r_width):
@@ -333,16 +337,15 @@ class MultiChannelMicWindow(BaseWindow):
         self.y_list = []
         for theta in self.Q:
             # Transform to cartesian and plot
-            x = self.direction[theta] * math.cos(theta)
-            y = self.direction[theta] * math.sin(theta)
+            x = self.r_width * self.direction[theta] * math.cos(self.radians*theta)
+            y = self.r_width * self.direction[theta] * math.sin(self.radians*theta)
             self.x_list.append(int(x))
             self.y_list.append(int(y))
         
-        #self.y_list = pg.pseudoScatter(self.x_list, spacing=0.15)
         self._widget.plot(self.x_list, self.y_list, symbol='o', symbolSize=10, symbolPen=(255,255,255,200), symbolBrush=(0,0,255,150))
         
         #print(len(self.Q))
-
+    
     def getWindow(self):
         return self._window
     
@@ -706,11 +709,11 @@ if __name__=="__main__":
     # recorder = VoiceRecorder(record_time=5)
     # recorder.setDeviceIndex(1)
 
-    rec1 = VoiceRecorder(record_time=5, nchannels=2, idevice=2) # nchannel=2 per port port numbers are 1,2
-    rec1.getDeviceIndex()
+    #rec1 = VoiceRecorder(record_time=5, nchannels=2, idevice=2) # nchannel=2 per port port numbers are 1,2
+    #rec1.getDeviceIndex()
     #rec2 = VoiceRecorder(record_time=5, nchannels=2, idevice=3) # nchannel=2 per port port numbers are 1,2
     # #recorder.getDeviceIndex()
-    win = QtMultiWindow(mc_recorder=[rec1])
+    win = QtMultiWindow(mc_recorder=[None])
     win.resize(800, 350)
     #win = QtMultiWindow(tcp_image=tcpi)#tcp_for_sonic, tcp_for_acc, tcp_for_image, recorder)
     
